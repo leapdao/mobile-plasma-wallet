@@ -13,17 +13,13 @@ import {
   // TouchableOpacity,
   View,
 } from 'react-native';
-// import { WebBrowser } from 'expo';
 import autobind from 'autobind-decorator';
 import Select from 'react-native-picker-select';
 
+import AmountInput from './AmountInput';
 
 @observer
-export default class DepositScreen extends React.Component {
-  static navigationOptions = {
-    header: null,
-  };
-
+export default class DepositForm extends React.Component {
   @observable
   value = '0';
 
@@ -47,25 +43,13 @@ export default class DepositScreen extends React.Component {
     const { color, onColorChange } = this.props;
     return (
       <View>
-        <View style={styles.row}>
-          <TextInput
-            value={this.value}
-            onChangeText={this.handleChange}
-            keyboardType="numeric"
-            style={styles.input}
-            />
-          <Select
-            value={color}
-            onValueChange={onColorChange}
-            items={[
-              { label: 'PSC', value: 0 },
-              { label: 'SIM', value: 1 },
-            ]}
-            style={{
-              inputIOS: inputIOSStyle,
-            }}
+        <AmountInput
+          value={this.value}
+          onChange={this.handleChange}
+          color={color}
+          onColorChange={onColorChange}
           />
-        </View>
+
         <View style={styles.row}>
           <Button
             title="Deposit"
