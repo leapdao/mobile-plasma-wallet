@@ -17,8 +17,6 @@ import {
 import autobind from 'autobind-decorator';
 import Select from 'react-native-picker-select';
 
-import DepositForm from '../components/DepositForm';
-
 
 @observer
 export default class DepositScreen extends React.Component {
@@ -27,7 +25,7 @@ export default class DepositScreen extends React.Component {
   };
 
   @observable
-  color = 0;
+  value = '0';
 
   @autobind
   handleChange(value) {
@@ -35,38 +33,48 @@ export default class DepositScreen extends React.Component {
   }
 
   @autobind
-  handleColorChange(color) {
-    this.color = color;
-  }
-
-  @autobind
-  handleSubmit(value) {
-    alert(`Deposit ${value} ${this.color}`);
+  handleSubmit() {
+    const { onSubmit } = this.props;
+    if (onSubmit) {
+      Promise.resolve(onSubmit(this.value))
+        .then(() => {
+          this.value = '0';
+        });
+    }
   }
 
   render() {
+    const { color, onColorChange } = this.props;
     return (
-      <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <DepositForm
-            onSubmit={this.handleSubmit}
-            onColorChange={this.handleColorChange}
-            color={this.color}
+      <View>
+        <View style={styles.row}>
+          <TextInput
+            value={this.value}
+            onChangeText={this.handleChange}
+            keyboardType="numeric"
+            style={styles.input}
             />
-        </ScrollView>
-      </KeyboardAvoidingView>
+          <Select
+            value={color}
+            onValueChange={onColorChange}
+            items={[
+              { label: 'PSC', value: 0 },
+              { label: 'SIM', value: 1 },
+            ]}
+            style={{
+              inputIOS: inputIOSStyle,
+            }}
+          />
+        </View>
+        <View style={styles.row}>
+          <Button
+            title="Deposit"
+            onPress={this.handleSubmit}
+            />
+        </View>
+      </View>
     );
   }
-
-  _handleLearnMorePress = () => {
-    // WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
-
-  _handleHelpPress = () => {
-    // WebBrowser.openBrowserAsync(
-    //   'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-    // );
-  };
 }
 
 const inputIOSStyle = {
@@ -83,16 +91,6 @@ const inputIOSStyle = {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  contentContainer: {
-    flex: 1,
-    paddingBottom: 10,
-    paddingHorizontal: 20,
-    justifyContent: 'flex-end'
-  },
   input: {
     ...inputIOSStyle,
     flex: 1,
