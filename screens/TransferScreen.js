@@ -1,16 +1,28 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text } from 'react-native';
+import { observer, inject } from 'mobx-react';
+import { View, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import autobind from 'autobind-decorator';
 
+import ColorSelector from '../components/ColorSelector';
+import TransactionsList from '../components/TransactionsList';
+
+@inject('app')
+@observer
 export default class TransferScreen extends React.Component {
-  static navigationOptions = {
-    header: null,
-  };
+  // static navigationOptions = {
+  //   header: <ColorSelector />,
+  // };
+
+  @autobind
+  handleSubmit(value) {
+    alert(`Deposit ${value} ${this.color}`);
+  }
 
   render() {
     return (
-      <ScrollView style={styles.container}>
-        <Text>Transfer</Text>
-      </ScrollView>
+      <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
+        <TransactionsList />
+      </KeyboardAvoidingView>
     );
   }
 }
@@ -18,7 +30,6 @@ export default class TransferScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 15,
     backgroundColor: '#fff',
   },
 });

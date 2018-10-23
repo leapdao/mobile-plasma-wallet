@@ -28,6 +28,7 @@ export default class DepositForm extends React.Component {
 
   render() {
     const { color, onColorChange } = this.props;
+    const items = [{ label: 'PSC', value: 0 }, { label: 'SIM', value: 1 }];
     return (
       <View style={styles.container}>
         <AmountInput
@@ -37,7 +38,10 @@ export default class DepositForm extends React.Component {
           onColorChange={onColorChange}
         />
         <View style={styles.row}>
-          <Button title="Deposit" onPress={this.handleSubmit} />
+          <Button
+            title={`Deposit ${items[color].label}`}
+            onPress={this.handleSubmit}
+          />
         </View>
       </View>
     );

@@ -1,19 +1,44 @@
 import React, { Component } from 'react';
 import { observable } from 'mobx';
-import { observer } from 'mobx-react';
+import { observer, inject } from 'mobx-react/native';
 import { ScrollView, View, Text, StyleSheet } from 'react-native';
 
+@inject('app')
 @observer
 export default class ColorSelector extends Component {
   @observable
-  width = 300;
+  width = null;
+
+  @observable
+  contentOffsetX = null;
+
+  constructor(props) {
+    super(props);
+    this.updateScrollPosition(props.app.color);
+  }
+
+  updateScrollPosition(index) {
+    const offsetX = index * this.width;
+    if (offsetX !== this.contentOffsetX && this.scrollView && this.width) {
+      console.log(index * this.width, this.contentOffsetX);
+      this.scrollView.scrollTo({
+        x: offsetX,
+        y: 0,
+        animated: false,
+      });
+    }
+  }
 
   render() {
-    const { onColorChange, color } = this.props;
+    const { app } = this.props;
     const items = ['Parsec Token', 'Simple Token'];
     return (
       <View style={styles.container}>
         <ScrollView
+          ref={view => {
+            this.scrollView = view;
+            this.updateScrollPosition(app.color);
+          }}
           onLayout={e => {
             this.width = e.nativeEvent.layout.width;
           }}
@@ -22,9 +47,8 @@ export default class ColorSelector extends Component {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           onScroll={e => {
-            onColorChange(
-              Math.round(e.nativeEvent.contentOffset.x / this.width)
-            );
+            this.contentOffsetX = e.nativeEvent.contentOffset.x;
+            app.setColor(Math.round(this.contentOffsetX / this.width));
           }}
         >
           {items.map(c => (
@@ -40,7 +64,7 @@ export default class ColorSelector extends Component {
         <View style={styles.dots}>
           {items.map((c, i) => (
             <View
-              style={[styles.dot, i === color && styles.activeDot]}
+              style={[styles.dot, i === app.color && styles.activeDot]}
               key={c}
             />
           ))}
@@ -52,6 +76,7 @@ export default class ColorSelector extends Component {
 
 const styles = StyleSheet.create({
   container: {
+    minHeight: 180,
     backgroundColor: '#efefef',
     flex: 1,
   },

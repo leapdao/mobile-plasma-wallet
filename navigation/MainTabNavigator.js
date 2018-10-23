@@ -9,10 +9,20 @@ import TabBarIcon from '../components/TabBarIcon';
 import DepositScreen from '../screens/DepositScreen';
 import TransferScreen from '../screens/TransferScreen';
 import ExitScreen from '../screens/ExitScreen';
+import ColorSelector from '../components/ColorSelector';
 
-const DepositStack = createStackNavigator({
-  Deposit: DepositScreen,
-});
+const stackNavigatorOptions = {
+  navigationOptions: {
+    header: <ColorSelector />,
+  },
+};
+
+const DepositStack = createStackNavigator(
+  {
+    Deposit: DepositScreen,
+  },
+  stackNavigatorOptions
+);
 
 DepositStack.navigationOptions = {
   tabBarLabel: 'Deposit',
@@ -28,9 +38,12 @@ DepositStack.navigationOptions = {
   ),
 };
 
-const TransferStack = createStackNavigator({
-  Transfer: TransferScreen,
-});
+const TransferStack = createStackNavigator(
+  {
+    Transfer: TransferScreen,
+  },
+  stackNavigatorOptions
+);
 
 TransferStack.navigationOptions = {
   tabBarLabel: 'Transfer',
@@ -46,9 +59,12 @@ TransferStack.navigationOptions = {
   ),
 };
 
-const ExitStack = createStackNavigator({
-  Exit: ExitScreen,
-});
+const ExitStack = createStackNavigator(
+  {
+    Exit: ExitScreen,
+  },
+  stackNavigatorOptions
+);
 
 ExitStack.navigationOptions = {
   tabBarLabel: 'Exit',
@@ -64,8 +80,10 @@ ExitStack.navigationOptions = {
   ),
 };
 
-export default createBottomTabNavigator({
+const TabNavigator = createBottomTabNavigator({
   DepositStack,
   TransferStack,
   ExitStack,
 });
+
+export default TabNavigator;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { observable } from 'mobx';
-import { observer } from 'mobx-react';
+import { observer, inject } from 'mobx-react/native';
 import {
   View,
   ScrollView,
@@ -10,51 +10,28 @@ import {
 import autobind from 'autobind-decorator';
 
 import ColorSelector from '../components/ColorSelector';
+import TransactionsList from '../components/TransactionsList';
 import DepositForm from '../components/DepositForm';
 
+@inject('app')
 @observer
 export default class DepositScreen extends React.Component {
-  static navigationOptions = {
-    header: null,
-  };
-
-  @observable
-  color = 0;
-
-  @autobind
-  handleChange(value) {
-    this.value = value;
-  }
-
-  @autobind
-  handleColorChange(color) {
-    this.color = color;
-  }
+  // static navigationOptions = {
+  //   header: <ColorSelector />,
+  // };
 
   @autobind
   handleSubmit(value) {
-    alert(`Deposit ${value} ${this.color}`);
+    const { app } = this.props;
+    alert(`Deposit ${value} ${app.color}`);
   }
 
   render() {
+    const { app } = this.props;
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-        <View style={styles.accountWrapper}>
-          <ColorSelector
-            onColorChange={this.handleColorChange}
-            color={this.color}
-          />
-        </View>
-        <ScrollView
-          style={styles.container}
-          contentContainerStyle={styles.contentContainer}
-        >
-          <DepositForm
-            onSubmit={this.handleSubmit}
-            onColorChange={this.handleColorChange}
-            color={this.color}
-          />
-        </ScrollView>
+        <TransactionsList />
+        <DepositForm onSubmit={this.handleSubmit} color={app.color} />
       </KeyboardAvoidingView>
     );
   }
@@ -74,17 +51,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  contentContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginVertical: 10,
-  },
-  accountWrapper: {
-    height: '25%',
   },
 });

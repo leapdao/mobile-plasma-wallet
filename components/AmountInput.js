@@ -15,7 +15,6 @@ export default class AmountInput extends React.Component {
           keyboardType="numeric"
           style={styles.input}
         />
-        <Text style={styles.unit}>{items[color].label}</Text>
       </View>
     );
   }

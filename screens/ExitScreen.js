@@ -1,10 +1,11 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text } from 'react-native';
+import ColorSelector from '../components/ColorSelector';
 
 export default class ExitScreen extends React.Component {
-  static navigationOptions = {
-    header: null,
-  };
+  // static navigationOptions = {
+  //   header: <ColorSelector />,
+  // };
 
   render() {
     return (
