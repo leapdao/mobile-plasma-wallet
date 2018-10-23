@@ -1,20 +1,8 @@
 import React from 'react';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
-import {
-  // Image,
-  // Platform,
-  ScrollView,
-  StyleSheet,
-  Button,
-  TextInput,
-  KeyboardAvoidingView,
-  // Picker,
-  // TouchableOpacity,
-  View,
-} from 'react-native';
+import { StyleSheet, Button, View } from 'react-native';
 import autobind from 'autobind-decorator';
-import Select from 'react-native-picker-select';
 
 import AmountInput from './AmountInput';
 
@@ -32,10 +20,9 @@ export default class DepositForm extends React.Component {
   handleSubmit() {
     const { onSubmit } = this.props;
     if (onSubmit) {
-      Promise.resolve(onSubmit(this.value))
-        .then(() => {
-          this.value = '0';
-        });
+      Promise.resolve(onSubmit(this.value)).then(() => {
+        this.value = '0';
+      });
     }
   }
 
@@ -48,13 +35,10 @@ export default class DepositForm extends React.Component {
           onChange={this.handleChange}
           color={color}
           onColorChange={onColorChange}
-          />
+        />
 
         <View style={styles.row}>
-          <Button
-            title="Deposit"
-            onPress={this.handleSubmit}
-            />
+          <Button title="Deposit" onPress={this.handleSubmit} />
         </View>
       </View>
     );
@@ -78,11 +62,11 @@ const styles = StyleSheet.create({
   input: {
     ...inputIOSStyle,
     flex: 1,
-    marginRight: 15
+    marginRight: 15,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginVertical: 10
-  }
+    marginVertical: 10,
+  },
 });

@@ -1,24 +1,10 @@
 import React from 'react';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
-import {
-  // Image,
-  // Platform,
-  ScrollView,
-  StyleSheet,
-  Button,
-  TextInput,
-  KeyboardAvoidingView,
-  // Picker,
-  // TouchableOpacity,
-  View,
-} from 'react-native';
-// import { WebBrowser } from 'expo';
+import { ScrollView, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import autobind from 'autobind-decorator';
-import Select from 'react-native-picker-select';
 
 import DepositForm from '../components/DepositForm';
-
 
 @observer
 export default class DepositScreen extends React.Component {
@@ -47,12 +33,15 @@ export default class DepositScreen extends React.Component {
   render() {
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}
+        >
           <DepositForm
             onSubmit={this.handleSubmit}
             onColorChange={this.handleColorChange}
             color={this.color}
-            />
+          />
         </ScrollView>
       </KeyboardAvoidingView>
     );
@@ -91,16 +80,16 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingBottom: 10,
     paddingHorizontal: 20,
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
   },
   input: {
     ...inputIOSStyle,
     flex: 1,
-    marginRight: 15
+    marginRight: 15,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginVertical: 10
-  }
+    marginVertical: 10,
+  },
 });

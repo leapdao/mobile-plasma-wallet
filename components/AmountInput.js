@@ -14,14 +14,11 @@ export default class AmountInput extends React.Component {
           onChangeText={onChange}
           keyboardType="numeric"
           style={styles.input}
-          />
+        />
         <Select
           value={color}
           onValueChange={onColorChange}
-          items={[
-            { label: 'PSC', value: 0 },
-            { label: 'SIM', value: 1 },
-          ]}
+          items={[{ label: 'PSC', value: 0 }, { label: 'SIM', value: 1 }]}
           style={{
             inputIOS: inputIOSStyle,
           }}
@@ -48,11 +45,11 @@ const styles = StyleSheet.create({
   input: {
     ...inputIOSStyle,
     flex: 1,
-    marginRight: 15
+    marginRight: 15,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginVertical: 10
-  }
+    marginVertical: 10,
+  },
 });
