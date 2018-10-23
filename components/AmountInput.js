@@ -1,12 +1,12 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { StyleSheet, TextInput, View } from 'react-native';
-import Select from 'react-native-picker-select';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 @observer
 export default class AmountInput extends React.Component {
   render() {
-    const { color, onColorChange, value, onChange } = this.props;
+    const { color, value, onChange } = this.props;
+    const items = [{ label: 'PSC', value: 0 }, { label: 'SIM', value: 1 }];
     return (
       <View style={styles.row}>
         <TextInput
@@ -15,41 +15,34 @@ export default class AmountInput extends React.Component {
           keyboardType="numeric"
           style={styles.input}
         />
-        <Select
-          value={color}
-          onValueChange={onColorChange}
-          items={[{ label: 'PSC', value: 0 }, { label: 'SIM', value: 1 }]}
-          style={{
-            inputIOS: inputIOSStyle,
-          }}
-        />
+        <Text style={styles.unit}>{items[color].label}</Text>
       </View>
     );
   }
 }
 
-const inputIOSStyle = {
-  fontSize: 16,
-  paddingTop: 13,
-  paddingHorizontal: 10,
-  paddingBottom: 12,
-  borderWidth: 1,
-  borderColor: 'gray',
-  borderRadius: 4,
-  backgroundColor: 'white',
-  width: 100,
-  color: 'black',
-};
-
 const styles = StyleSheet.create({
   input: {
-    ...inputIOSStyle,
+    fontSize: 16,
+    paddingTop: 11,
+    paddingHorizontal: 10,
+    paddingBottom: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 6,
+    backgroundColor: 'white',
+    width: 100,
+    color: 'black',
     flex: 1,
-    marginRight: 15,
+    marginRight: 10,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginVertical: 10,
+    alignItems: 'center',
+    marginVertical: 5,
+  },
+  unit: {
+    width: 50,
   },
 });
