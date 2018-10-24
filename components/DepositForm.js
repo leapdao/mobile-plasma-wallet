@@ -1,11 +1,12 @@
 import React from 'react';
-import { observable } from 'mobx';
-import { observer } from 'mobx-react';
+import { observable, computed } from 'mobx';
+import { observer, inject } from 'mobx-react/native';
 import { StyleSheet, Button, View } from 'react-native';
 import autobind from 'autobind-decorator';
 
 import AmountInput from './AmountInput';
 
+@inject('tokens')
 @observer
 export default class DepositForm extends React.Component {
   @observable
@@ -27,8 +28,13 @@ export default class DepositForm extends React.Component {
   }
 
   render() {
-    const { color, onColorChange } = this.props;
-    const items = [{ label: 'PSC', value: 0 }, { label: 'SIM', value: 1 }];
+    const { color, onColorChange, tokens } = this.props;
+    const token = tokens.tokenForColor(color);
+
+    if (!token || !token.ready) {
+      return null;
+    }
+
     return (
       <View style={styles.container}>
         <AmountInput
@@ -39,7 +45,7 @@ export default class DepositForm extends React.Component {
         />
         <View style={styles.row}>
           <Button
-            title={`Deposit ${items[color].label}`}
+            title={`Deposit ${token.symbol}`}
             onPress={this.handleSubmit}
           />
         </View>

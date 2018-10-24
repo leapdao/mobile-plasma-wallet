@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react/native';
 import { ScrollView, View, Text, StyleSheet } from 'react-native';
+import TokenValue from './TokenValue';
 
-@inject('app')
+@inject('app', 'tokens')
 @observer
 export default class ColorSelector extends Component {
   @observable
@@ -17,10 +18,11 @@ export default class ColorSelector extends Component {
     this.updateScrollPosition(props.app.color);
   }
 
-  updateScrollPosition(index) {
+  updateScrollPosition(color) {
+    const index = this.props.tokens.tokenIndexForColor(color);
     const offsetX = index * this.width;
     if (offsetX !== this.contentOffsetX && this.scrollView && this.width) {
-      console.log(index * this.width, this.contentOffsetX);
+      // console.log(index * this.width, this.contentOffsetX);
       this.scrollView.scrollTo({
         x: offsetX,
         y: 0,
@@ -30,8 +32,7 @@ export default class ColorSelector extends Component {
   }
 
   render() {
-    const { app } = this.props;
-    const items = ['Parsec Token', 'Simple Token'];
+    const { app, tokens } = this.props;
     return (
       <View style={styles.container}>
         <ScrollView
@@ -48,24 +49,25 @@ export default class ColorSelector extends Component {
           showsHorizontalScrollIndicator={false}
           onScroll={e => {
             this.contentOffsetX = e.nativeEvent.contentOffset.x;
-            app.setColor(Math.round(this.contentOffsetX / this.width));
+            const index = Math.round(this.contentOffsetX / this.width);
+            app.setColor(tokens.list[index].color);
           }}
         >
-          {items.map(c => (
-            <View style={[styles.color, { width: this.width }]} key={c}>
-              <Text style={styles.title}>{c}</Text>
+          {tokens.list.map(token => (console.log(token),
+            <View style={[styles.color, { width: this.width }]} key={token.address}>
+              <Text style={styles.title}>{token.name}</Text>
               <View style={styles.balances}>
-                <Text style={styles.balance}>Main: 10 PSC</Text>
-                <Text style={styles.balance}>Side: 10 PSC</Text>
+                <Text style={styles.balance}>Eth: <TokenValue precision={2} value={token.balance} color={token.color} /></Text>
+                <Text style={styles.balance}>Plasma: <TokenValue precision={2} value={token.plasmaBalance} color={token.color} /></Text>
               </View>
             </View>
           ))}
         </ScrollView>
         <View style={styles.dots}>
-          {items.map((c, i) => (
+          {tokens.list.map((token, i) => (
             <View
-              style={[styles.dot, i === app.color && styles.activeDot]}
-              key={c}
+              style={[styles.dot, i === tokens.tokenIndexForColor(app.color) && styles.activeDot]}
+              key={token.address}
             />
           ))}
         </View>

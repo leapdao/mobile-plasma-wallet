@@ -5,19 +5,24 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
-    "prepare": "npm run patch",
-    "patch": "find ./node_modules -name fetch-npm-browserify.js -print -exec sed -i.bk 's/self/global/g' {} \\;"
+    "prepare": "npm run patch && npm run nodeify",
+    "patch": "find ./node_modules -name fetch-npm-browserify.js -print -exec sed -i.bk 's/self/global/g' {} \\;",
+    "nodeify": "./node_modules/.bin/rn-nodeify --hack"
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.1.2",
     "@tradle/react-native-http": "^2.0.1",
+    "@types/bn.js": "^4.11.2",
+    "@types/ethereumjs-util": "^5.2.0",
     "assert": "^1.4.1",
     "autobind-decorator": "^2.1.0",
+    "bn.js": "^4.11.8",
     "browserify-zlib": "^0.1.4",
     "console-browserify": "^1.1.0",
     "constants-browserify": "^1.0.0",
     "dns.js": "^1.0.1",
     "domain-browser": "^1.2.0",
+    "ethereumjs-util": "^6.0.0",
     "events": "^1.1.1",
     "https-browserify": "0.0.1",
     "mobx": "^5.5.2",
@@ -45,7 +50,7 @@
     "url": "^0.10.3",
     "util": "^0.10.4",
     "vm-browserify": "0.0.4",
-    "web3": "0.20"
+    "web3": "^1.0.0-beta.33"
   },
   "devDependencies": {
     "@types/react": "^16.4.18",

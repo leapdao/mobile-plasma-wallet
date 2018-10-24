@@ -3,7 +3,7 @@ import autobind from 'autobind-decorator';
 
 export default class AppStore {
   @observable
-  public color = 1;
+  public color = 0;
 
   @autobind
   @action
