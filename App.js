@@ -1,7 +1,6 @@
 import React from 'react';
-import Web3 from 'web3';
-import { Provider } from 'mobx-react/native';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Provider, observer } from 'mobx-react/native';
+import { Platform, StatusBar, StyleSheet, View, Text } from 'react-native';
 import AppNavigator from './navigation/AppNavigator';
 import AppStore from './stores/app';
 import NodeStore from './stores/node';
@@ -10,8 +9,7 @@ import Tokens from './stores/tokens';
 import Bridge from './stores/bridge';
 import Unspents from './stores/unspents';
 
-const web3 = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io"));
-
+@observer
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -28,6 +26,10 @@ export default class App extends React.Component {
 
 
   render() {
+    if (!this.stores.account.ready) {
+      return <View><Text>Loading...</Text></View>
+    }
+
     return (
       <Provider {...this.stores}>
         <View style={styles.container}>

@@ -7,39 +7,54 @@
 
 /* eslint-disable no-underscore-dangle */
 
-import { observable, computed } from 'mobx';
+import { AsyncStorage } from 'react-native';
+import { observable, computed, autorun } from 'mobx';
+import { Account as Web3Account } from 'web3/types';
+import getWeb3 from '../utils/getWeb3';
+import autobind from 'autobind-decorator';
 
 export default class Account {
   @observable
-  private _address: string | null = '0x8AB21C65041778DFc7eC7995F9cDef3d5221a5ad';
+  private _privKey: string | null = null;
   @observable
   public ready = false;
 
   constructor() {
-    // read from AsyncStorage here
-    // const web3 = getWeb3(true) as Web3;
-    // if ((window as any).web3) {
-    //   setInterval(() => {
-    //     web3.eth.getAccounts().then(accounts => {
-    //       this.address = accounts[0];
-    //     });
-    //   }, 1000);
+    AsyncStorage.getItem('privKey').then(privKey => {
+      if (privKey) {
+        this._privKey = privKey;
+      }
 
-    //   web3.eth.getAccounts().then(accounts => {
-    //     this.address = accounts[0];
-    //     this.ready = true;
-    //   });
-    // } else {
-    //   this.ready = true;
-    // }
+      this.ready = true;
+    });
+    autorun(this.autoSaveKey);
   }
 
-  public set address(address: string | null) {
-    this._address = address;
+  @autobind
+  private autoSaveKey() {
+    if (this._privKey) {
+      AsyncStorage.setItem('privKey', this._privKey);
+    } else {
+      AsyncStorage.removeItem('privKey');
+    }
+  }
+
+  public set privKey(privKey: string | null) {
+    this._privKey = privKey;
+  }
+
+  @computed
+  public get account(): Web3Account | null {
+    if (!this._privKey) {
+      return null;
+    }
+
+    const web3 = getWeb3();
+    return web3.eth.accounts.privateKeyToAccount(this._privKey);
   }
 
   @computed
   public get address() {
-    return this._address;
+    return this.account && this.account.address;
   }
 }
