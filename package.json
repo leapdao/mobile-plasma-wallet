@@ -1,35 +1,33 @@
 {
-  "name": "my-new-project",
+  "name": "parsec-plasma-wallet",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "react-native start",
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
-    "test": "node ./node_modules/jest/bin/jest.js --watchAll"
-  },
-  "jest": {
-    "preset": "react-native"
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest"
   },
   "dependencies": {
-    "@expo/samples": "2.1.1",
-    "@types/react-native": "^0.57.7",
+    "@babel/plugin-proposal-decorators": "^7.1.2",
     "autobind-decorator": "^2.1.0",
-    "expo": "^30.0.1",
-    "mobx": "^5.5.1",
-    "mobx-react": "^5.3.4",
-    "react": "16.3.1",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-30.0.0.tar.gz",
-    "react-native-picker-select": "^5.0.0",
-    "react-navigation": "^2.16.0"
+    "mobx": "^5.5.2",
+    "mobx-react": "^5.3.5",
+    "react": "16.6.0-alpha.8af6728",
+    "react-native": "0.57.3",
+    "react-navigation": "^2.18.1"
   },
   "devDependencies": {
     "@types/react": "^16.4.18",
-    "babel-plugin-transform-decorators-legacy": "^1.3.5",
-    "babel-preset-react-native-stage-0": "^1.0.1",
-    "jest-react-native": "^18.0.0",
+    "@types/react-native": "^0.57.7",
+    "babel-jest": "23.6.0",
+    "jest": "23.6.0",
+    "metro-react-native-babel-preset": "0.48.1",
     "prettier": "^1.14.3",
     "react-native-typescript-transformer": "^1.2.10",
+    "react-test-renderer": "16.6.0-alpha.8af6728",
     "typescript": "^3.1.3"
+  },
+  "jest": {
+    "preset": "react-native"
   },
   "prettier": {
     "printWidth": 80,

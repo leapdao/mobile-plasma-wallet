@@ -1,25 +1,14 @@
 import React from 'react';
-import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react/native';
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  KeyboardAvoidingView,
-} from 'react-native';
+import { StyleSheet, KeyboardAvoidingView } from 'react-native';
 import autobind from 'autobind-decorator';
 
-import ColorSelector from '../components/ColorSelector';
 import TransactionsList from '../components/TransactionsList';
 import DepositForm from '../components/DepositForm';
 
 @inject('app')
 @observer
 export default class DepositScreen extends React.Component {
-  // static navigationOptions = {
-  //   header: <ColorSelector />,
-  // };
-
   @autobind
   handleSubmit(value) {
     const { app } = this.props;

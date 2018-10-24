@@ -1,18 +1,13 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
-import { View, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, KeyboardAvoidingView } from 'react-native';
 import autobind from 'autobind-decorator';
 
-import ColorSelector from '../components/ColorSelector';
 import TransactionsList from '../components/TransactionsList';
 
 @inject('app')
 @observer
 export default class TransferScreen extends React.Component {
-  // static navigationOptions = {
-  //   header: <ColorSelector />,
-  // };
-
   @autobind
   handleSubmit(value) {
     alert(`Deposit ${value} ${this.color}`);

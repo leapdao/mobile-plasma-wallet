@@ -1,3 +1,3 @@
-rootProject.name = 'PlasmaWallet'
+rootProject.name = 'PlasmaWallet2'
 
 include ':app'
