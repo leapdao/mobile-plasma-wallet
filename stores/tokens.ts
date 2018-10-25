@@ -25,6 +25,9 @@ export default class Tokens implements IPersistentStore {
   private erc20TokenCount: number;
   private nftTokenCount: number;
 
+  @observable
+  public ready: boolean = false;
+
   constructor(
     private account: Account,
     private bridge: Bridge,
@@ -33,7 +36,6 @@ export default class Tokens implements IPersistentStore {
     this.erc20TokenCount = 0;
     this.nftTokenCount = 0;
 
-    this.init();
     reaction(
       () => this.bridge.events,
       () => {
@@ -42,6 +44,14 @@ export default class Tokens implements IPersistentStore {
         }
       }
     );
+
+    // ready value would be changed in persistentStore decorator
+    reaction(() => this.ready, (ready, r) => {
+      if (ready) {
+        this.init();
+        r.dispose();
+      }
+    })
   }
 
   @autobind

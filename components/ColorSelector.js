@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { observable } from 'mobx';
+import { observable, reaction } from 'mobx';
 import { observer, inject } from 'mobx-react/native';
 import { ScrollView, View, Text, StyleSheet } from 'react-native';
 import TokenValue from './TokenValue';
@@ -16,9 +16,13 @@ export default class ColorSelector extends Component {
   constructor(props) {
     super(props);
     this.updateScrollPosition(props.app.color);
+    reaction(() => props.app.color, () => this.updateScrollPosition(props.app.color));
   }
 
   updateScrollPosition(color) {
+    if (!this.scrollView) {
+      return null;
+    }
     const index = this.props.tokens.tokenIndexForColor(color);
     const offsetX = index * this.width;
     if (offsetX !== this.contentOffsetX && this.scrollView && this.width) {

@@ -1,7 +1,6 @@
 import React from 'react';
-import { computed } from 'mobx';
 import { Provider, observer } from 'mobx-react/native';
-import { Platform, StatusBar, StyleSheet, View, Text } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View, ActivityIndicator } from 'react-native';
 import AppNavigator from './navigation/AppNavigator';
 import AppStore from './stores/app';
 import NodeStore from './stores/node';
@@ -33,7 +32,7 @@ export default class App extends React.Component {
       this.stores.account.ready &&
       this.stores.tokens.ready
     )) {
-      return <View><Text>Loading...</Text></View>
+      return <View style={styles.loader}><ActivityIndicator size="large" /></View>
     }
 
     return (
@@ -52,4 +51,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  loader: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });

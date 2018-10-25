@@ -235,9 +235,9 @@ export default class Token extends ContractStore {
     const contract = plasma ? this.plasmaContract : this.contract;
     if (contract && this.account.address) {
       contract.methods
-        .balanceOf(this.account.address)
-        .call()
-        .then(balance => {
+      .balanceOf(this.account.address)
+      .call()
+      .then(balance => {
           if (this.isNft) {
             return Promise.all(
               range(0, balance - 1).map(i =>
