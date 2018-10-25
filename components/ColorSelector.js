@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
 import { observable, reaction } from 'mobx';
 import { observer, inject } from 'mobx-react/native';
-import { ScrollView, View, Text, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, StatusBar } from 'react-native';
 import TokenValue from './TokenValue';
+
+function colorFromAddr(addr) {
+  const base = (parseInt(addr.slice(11, 21), 16) % 10) + 2;
+  const h = parseInt(addr.slice(base, base + 30), 16) % 360;
+  const s = (parseInt(addr.slice(base, base + 5), 16) % 20) - 10;
+  return `hsl(${h}, ${90 + s}%, 75%)`;
+}
 
 @inject('app', 'tokens')
 @observer
@@ -16,7 +23,11 @@ export default class ColorSelector extends Component {
   constructor(props) {
     super(props);
     this.updateScrollPosition(props.app.color);
-    reaction(() => props.app.color, () => this.updateScrollPosition(props.app.color));
+    reaction(
+      () => props.app.color,
+      () => this.updateScrollPosition(props.app.color)
+    );
+    StatusBar.setBarStyle('light-content');
   }
 
   updateScrollPosition(color) {
@@ -58,11 +69,34 @@ export default class ColorSelector extends Component {
           }}
         >
           {tokens.list.map(token => (
-            <View style={[styles.color, { width: this.width }]} key={token.address}>
+            <View
+              style={[
+                styles.color,
+                {
+                  width: this.width,
+                  backgroundColor: colorFromAddr(token.address),
+                },
+              ]}
+              key={token.address}
+            >
               <Text style={styles.title}>{token.name}</Text>
               <View style={styles.balances}>
-                <Text style={styles.balance}>Eth: <TokenValue precision={2} value={token.balance} color={token.color} /></Text>
-                <Text style={styles.balance}>Plasma: <TokenValue precision={2} value={token.plasmaBalance} color={token.color} /></Text>
+                <Text style={styles.balance}>
+                  Eth:{' '}
+                  <TokenValue
+                    precision={2}
+                    value={token.balance}
+                    color={token.color}
+                  />
+                </Text>
+                <Text style={styles.balance}>
+                  Plasma:{' '}
+                  <TokenValue
+                    precision={2}
+                    value={token.plasmaBalance}
+                    color={token.color}
+                  />
+                </Text>
               </View>
             </View>
           ))}
@@ -70,7 +104,10 @@ export default class ColorSelector extends Component {
         <View style={styles.dots}>
           {tokens.list.map((token, i) => (
             <View
-              style={[styles.dot, i === tokens.tokenIndexForColor(app.color) && styles.activeDot]}
+              style={[
+                styles.dot,
+                i === tokens.tokenIndexForColor(app.color) && styles.activeDot,
+              ]}
               key={token.address}
             />
           ))}
@@ -89,11 +126,12 @@ const styles = StyleSheet.create({
   contentContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 30,
   },
   color: {
+    paddingTop: 30,
     flex: 1,
     width: 300,
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -101,6 +139,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#000',
   },
   balances: {
     flexDirection: 'row',
@@ -108,11 +147,16 @@ const styles = StyleSheet.create({
   },
   balance: {
     marginHorizontal: 5,
+    color: '#000',
   },
   dots: {
     flexDirection: 'row',
     justifyContent: 'center',
     paddingBottom: 15,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   dot: {
     width: 6,
