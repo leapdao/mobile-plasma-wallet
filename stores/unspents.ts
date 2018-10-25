@@ -36,7 +36,9 @@ function makePeriodFromRange(startBlock: number, endBlock: number) {
       blocks.filter(a => !!a).map(({ number, timestamp, transactions }) => {
         const block = new Block(number, {
           timestamp,
-          txs: (transactions as ParsecTransaction[]).map(tx => Tx.fromRaw(tx.raw)),
+          txs: (transactions as ParsecTransaction[]).map(tx =>
+            Tx.fromRaw(tx.raw)
+          ),
         });
 
         return block;
@@ -162,11 +164,13 @@ export default class Unspents {
         const inputs = chunk.reduce(
           (inputs, u) => {
             const index = inputs.findIndex(
-              input => !!(
-                input.prevout &&
-                input.prevout.hash.compare(u.outpoint.hash) === 0 &&
-                input.prevout.index === u.outpoint.index
-            ));
+              input =>
+                !!(
+                  input.prevout &&
+                  input.prevout.hash.compare(u.outpoint.hash) === 0 &&
+                  input.prevout.index === u.outpoint.index
+                )
+            );
 
             if (index === -1) {
               inputs.push(new Input(u.outpoint));

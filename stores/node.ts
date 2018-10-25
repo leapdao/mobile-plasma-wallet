@@ -5,7 +5,8 @@ import persistentStore, { IPersistentStore } from './persistentStore';
 
 @persistentStore('node')
 export default class NodeStore implements IPersistentStore {
-  @observable public latestBlock: number = 0;
+  @observable
+  public latestBlock: number = 0;
 
   constructor() {
     this.loadLatestBlock();
@@ -25,12 +26,11 @@ export default class NodeStore implements IPersistentStore {
   public toJSON() {
     return {
       latestBlock: this.latestBlock,
-    }
+    };
   }
 
   @autobind
-  public fromJSON({ latestBlock }: { latestBlock: number}) {
+  public fromJSON({ latestBlock }: { latestBlock: number }) {
     this.latestBlock = latestBlock;
   }
 }
-

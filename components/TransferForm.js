@@ -8,16 +8,22 @@ import {
   View,
   ActivityIndicator,
   Alert,
+  TextInput,
 } from 'react-native';
 import autobind from 'autobind-decorator';
+import { isValidAddress } from 'ethereumjs-util';
 
 import AmountInput from './AmountInput';
+import Input from './Input';
 
 @inject('tokens')
 @observer
-export default class DepositForm extends React.Component {
+export default class TransferForm extends React.Component {
   @observable
   value = Output.isNFT(this.props.color) ? '' : '0';
+
+  @observable
+  address = '';
 
   @observable
   sending = false;
@@ -25,6 +31,11 @@ export default class DepositForm extends React.Component {
   @autobind
   handleChange(value) {
     this.value = value;
+  }
+
+  @autobind
+  handleAddressChange(address) {
+    this.address = address;
   }
 
   componentWillReceiveProps({ color: nextColor }) {
@@ -44,10 +55,12 @@ export default class DepositForm extends React.Component {
     const { onSubmit, tokens, color } = this.props;
     const token = tokens.tokenForColor(color);
     const value = token.isNft ? this.value : Number(this.value);
-    if (onSubmit && value) {
+    const address = this.address.trim();
+
+    if (onSubmit && value && isValidAddress(address)) {
       Alert.alert(
-        'Deposit',
-        `${this.value} ${token.symbol}`,
+        'Transfer',
+        `${value} ${token.symbol} → ${this.address}`,
         [
           {
             text: 'Cancel',
@@ -89,14 +102,19 @@ export default class DepositForm extends React.Component {
           value={this.value}
           onChange={this.handleChange}
           color={color}
-          balance={token.balance}
+          balance={token.plasmaBalance}
           disabled={this.sending}
+        />
+        <Input
+          placeholder="Receiver address"
+          value={this.address}
+          onChangeText={this.handleAddressChange}
         />
         <View style={styles.row}>
           {this.sending && <ActivityIndicator size="small" />}
           {!this.sending && (
             <Button
-              title={`Deposit ${token.symbol}`}
+              title={`Transfer ${token.symbol}`}
               onPress={this.handleSubmit}
             />
           )}
