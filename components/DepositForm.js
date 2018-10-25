@@ -1,5 +1,6 @@
 import React from 'react';
-import { observable, computed } from 'mobx';
+import { Output } from 'parsec-lib';
+import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react/native';
 import { StyleSheet, Button, View } from 'react-native';
 import autobind from 'autobind-decorator';
@@ -10,19 +11,29 @@ import AmountInput from './AmountInput';
 @observer
 export default class DepositForm extends React.Component {
   @observable
-  value = '0';
+  value = Output.isNFT(this.props.color) ? '' : '0';
 
   @autobind
   handleChange(value) {
     this.value = value;
   }
 
+  componentWillReceiveProps({ color: nextColor }) {
+    const { color } = this.props;
+    if (
+      Output.isNFT(nextColor) ||
+      Output.isNFT(color) !== Output.isNFT(nextColor)
+    ) {
+      this.value = Output.isNFT(nextColor) ? '' : '0';
+    }
+  }
+
   @autobind
   handleSubmit() {
-    const { onSubmit } = this.props;
+    const { onSubmit, color } = this.props;
     if (onSubmit) {
       Promise.resolve(onSubmit(this.value)).then(() => {
-        this.value = '0';
+        this.value = Output.isNFT(color) ? '' : '0';
       });
     }
   }
@@ -42,6 +53,7 @@ export default class DepositForm extends React.Component {
           onChange={this.handleChange}
           color={color}
           onColorChange={onColorChange}
+          balance={token.balance}
         />
         <View style={styles.row}>
           <Button

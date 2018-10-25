@@ -4252,6 +4252,10 @@ locate-path@^2.0.0:
     p-locate "^2.0.0"
     path-exists "^3.0.0"
 
+lodash.isequal@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
+
 lodash.pad@^4.1.0:
   version "4.5.1"
   resolved "https://registry.yarnpkg.com/lodash.pad/-/lodash.pad-4.5.1.tgz#4330949a833a7c8da22cc20f6a26c4d59debba70"
@@ -5541,6 +5545,12 @@ react-native-level-fs@^3.0.1:
 react-native-os@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-native-os/-/react-native-os-1.2.1.tgz#681c27b4b4340c96f6297cf50df00ba2f6fad7cb"
+
+react-native-picker-select@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-picker-select/-/react-native-picker-select-5.0.0.tgz#564ff994ae004126fd67340c4fd1188533f4bf91"
+  dependencies:
+    lodash.isequal "^4.5.0"
 
 react-native-randombytes@^2.2.0:
   version "2.3.0"

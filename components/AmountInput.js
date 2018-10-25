@@ -1,42 +1,59 @@
 import React from 'react';
+import { Output } from 'parsec-lib';
 import { observer } from 'mobx-react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
+import Select from 'react-native-picker-select';
 
 @observer
 export default class AmountInput extends React.Component {
   render() {
-    const { color, value, onChange } = this.props;
-    const items = [{ label: 'PSC', value: 0 }, { label: 'SIM', value: 1 }];
+    const { color, balance, value, onChange } = this.props;
     return (
       <View style={styles.row}>
-        <TextInput
-          value={value}
-          onChangeText={onChange}
-          keyboardType="numeric"
-          style={styles.input}
-        />
+        {Output.isNFT(color) && (
+          <Select
+            value={value}
+            onValueChange={onChange}
+            items={balance.map(v => ({ value: v, label: v, key: v }))}
+            style={{
+              inputIOS: inputIOSStyle,
+            }}
+          />
+        )}
+        {!Output.isNFT(color) && (
+          <TextInput
+            value={value}
+            onChangeText={onChange}
+            keyboardType="numeric"
+            style={styles.input}
+          />
+        )}
       </View>
     );
   }
 }
 
+const inputIOSStyle = {
+  fontSize: 16,
+  paddingTop: 13,
+  paddingHorizontal: 10,
+  paddingBottom: 12,
+  borderWidth: 1,
+  borderColor: 'gray',
+  borderRadius: 4,
+  backgroundColor: 'white',
+  width: 100,
+  color: 'black',
+  width: '100%',
+};
+
 const styles = StyleSheet.create({
   input: {
-    fontSize: 16,
-    paddingTop: 11,
-    paddingHorizontal: 10,
-    paddingBottom: 10,
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 6,
-    backgroundColor: 'white',
-    width: 100,
-    color: 'black',
-    flex: 1,
+    ...inputIOSStyle,
     marginRight: 10,
   },
   row: {
-    flexDirection: 'row',
+    // flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 5,
