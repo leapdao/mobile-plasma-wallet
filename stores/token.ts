@@ -18,6 +18,7 @@ import autobind from 'autobind-decorator';
 import BN from 'bn.js';
 import { EventLog, Contract } from 'web3/types';
 import { erc20, erc721 } from '../utils/abis';
+import sendTransaction from '../utils/sendTransaction';
 
 import Account from './account';
 import ContractStore from './contractStore';
@@ -26,6 +27,7 @@ import getParsecWeb3 from '../utils/getParsecWeb3';
 import { range } from '../utils/range';
 import NodeStore from './node';
 import Web3 from 'web3';
+import getWeb3 from '../utils/getWeb3';
 
 const tokenInfo = (
   token: Contract,
@@ -44,8 +46,10 @@ const isOurTransfer = (event: EventLog, ourAccount: Account): boolean => {
   }
 
   return (
-    ((event.returnValues as any)[0]).toLowerCase() === ourAccount.address.toLowerCase() ||
-    ((event.returnValues as any)[1]).toLowerCase() === ourAccount.address.toLowerCase()
+    (event.returnValues as any)[0].toLowerCase() ===
+      ourAccount.address.toLowerCase() ||
+    (event.returnValues as any)[1].toLowerCase() ===
+      ourAccount.address.toLowerCase()
   );
 };
 
@@ -132,7 +136,10 @@ export default class Token extends ContractStore {
     if (this.isNft) return tokenCentsValue;
 
     if (precision) {
-      return Math.round(tokenCentsValue / 10 ** (this.decimals - precision)) / 10 ** precision;
+      return (
+        Math.round(tokenCentsValue / 10 ** (this.decimals - precision)) /
+        10 ** precision
+      );
     }
 
     return tokenCentsValue / 10 ** this.decimals;
@@ -179,31 +186,25 @@ export default class Token extends ContractStore {
         return Tx.transfer(inputs, outputs);
       })
       .then((tx: Tx<any>) => tx.signWeb3(this.iWeb3 as Web3))
-      .then(
-        (signedTx: Tx<any>) => {
-          return {
-            futureReceipt: parsecWeb3.eth.sendSignedTransaction(
-              signedTx.toRaw()
-            ),
-          };
-        },
-      );
+      .then((signedTx: Tx<any>) => {
+        return {
+          futureReceipt: parsecWeb3.eth.sendSignedTransaction(signedTx.toRaw()),
+        };
+      });
   }
 
-  // public approveAndCall(
-  //   to: string,
-  //   value: number,
-  //   data: string
-  // ): Promise<InflightTxReceipt> {
-  //   if (!this.iContract) {
-  //     throw new Error('No metamask');
-  //   }
-
+  // public approveAndCall(to: string, value: number, data: string): Promise<any> {
   //   return this.maybeApprove(to, value).then(() => {
-  //     if (!this.iWeb3 || !this.account.address) {
-  //       throw new Error('No metamask');
+  //     if (!this.account.account) {
+  //       throw new Error('No account');
   //     }
-  //     const futureReceipt = this.iWeb3.eth.sendTransaction({
+
+  //     sendTransaction(getWeb3(), {
+  //       account: this.account.account,
+  //       to,
+  //       data: data,
+  //     })
+  //     const futureReceipt = getWeb3().eth.sendTransaction({
   //       from: this.account.address,
   //       to,
   //       data,
@@ -235,9 +236,9 @@ export default class Token extends ContractStore {
     const contract = plasma ? this.plasmaContract : this.contract;
     if (contract && this.account.address) {
       contract.methods
-      .balanceOf(this.account.address)
-      .call()
-      .then(balance => {
+        .balanceOf(this.account.address)
+        .call()
+        .then(balance => {
           if (this.isNft) {
             return Promise.all(
               range(0, balance - 1).map(i =>
@@ -263,18 +264,17 @@ export default class Token extends ContractStore {
   }
 
   private hasEnoughAllowance(spender: string, value: number): Promise<Boolean> {
-    // if (this.isNft) {
-    //   return this.iContract.methods
-    //     .getApproved(value)
-    //     .call()
-    //     .then(operator => operator === spender);
-    // } else {
-    //   return this.iContract.methods
-    //     .allowance(this.account.address, spender)
-    //     .call()
-    //     .then(allowance => Number(allowance) >= value);
-    // }
-    return Promise.resolve(true);
+    if (this.isNft) {
+      return this.contract.methods
+        .getApproved(value)
+        .call()
+        .then(operator => operator === spender);
+    } else {
+      return this.contract.methods
+        .allowance(this.account.address, spender)
+        .call()
+        .then(allowance => Number(allowance) >= value);
+    }
   }
 
   /*
@@ -285,25 +285,23 @@ export default class Token extends ContractStore {
   * @param value Minimal amount of allowance a spender should have
   * @returns Promise resolved when allowance is enough for the transfer
   */
-  private maybeApprove(spender: string, value: number): any {
-    // return this.hasEnoughAllowance(spender, value).then(hasEnoughAllowance => {
-    //   if (hasEnoughAllowance) return;
+  public maybeApprove(spender: string, value: number): any {
+    return this.hasEnoughAllowance(spender, value).then(hasEnoughAllowance => {
+      if (hasEnoughAllowance) return;
 
-    //   const tx = this.iContract.methods
-    //     .approve(spender, this.allowanceOrTokenId(value))
-    //     .send({ from: this.account.address });
-
-    //   this.watchTx(tx, 'approve', {
-    //     message: `Approve bridge to transfer ${this.symbol}`,
-    //     description:
-    //       'Before you proceed with your tx, you need to sign a ' +
-    //       `transaction to allow the bridge contract to transfer your ${
-    //         this.symbol
-    //       }.`,
-    //   });
-
-    //   return txSuccess(tx);
-    // });
+      if (!this.account.account) {
+        throw new Error('No account');
+      }
+      console.log('approve');
+      return sendTransaction(getWeb3(), {
+        method: this.contract.methods.approve(
+          spender,
+          this.allowanceOrTokenId(value)
+        ),
+        to: this.address,
+        account: this.account.account,
+      });
+    });
   }
 
   toJSON() {

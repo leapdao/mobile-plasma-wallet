@@ -6,13 +6,27 @@ import autobind from 'autobind-decorator';
 import TransactionsList from '../components/TransactionsList';
 import DepositForm from '../components/DepositForm';
 
-@inject('app')
+@inject('app', 'bridge', 'tokens')
 @observer
 export default class DepositScreen extends React.Component {
   @autobind
   handleSubmit(value) {
-    const { app } = this.props;
-    alert(`Deposit ${value} ${app.color}`);
+    const { app, tokens, bridge } = this.props;
+    const token = tokens.tokenForColor(app.color);
+
+    if (token) {
+      return bridge.deposit(token, token.toCents(value)).then(
+        ({ futureReceipt }) => {
+          return new Promise((resolve, reject) => {
+            futureReceipt.once('transactionHash', resolve);
+            futureReceipt.once('error', reject);
+          });
+        },
+        err => {
+          console.error(err);
+        }
+      );
+    }
   }
 
   render() {

@@ -2,7 +2,13 @@ import React from 'react';
 import { Output } from 'parsec-lib';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react/native';
-import { StyleSheet, Button, View } from 'react-native';
+import {
+  StyleSheet,
+  Button,
+  View,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
 import autobind from 'autobind-decorator';
 
 import AmountInput from './AmountInput';
@@ -13,6 +19,9 @@ export default class DepositForm extends React.Component {
   @observable
   value = Output.isNFT(this.props.color) ? '' : '0';
 
+  @observable
+  sending = false;
+
   @autobind
   handleChange(value) {
     this.value = value;
@@ -20,21 +29,49 @@ export default class DepositForm extends React.Component {
 
   componentWillReceiveProps({ color: nextColor }) {
     const { color } = this.props;
-    if (
-      Output.isNFT(nextColor) ||
-      Output.isNFT(color) !== Output.isNFT(nextColor)
-    ) {
-      this.value = Output.isNFT(nextColor) ? '' : '0';
+    if (color !== nextColor) {
+      if (
+        Output.isNFT(nextColor) ||
+        Output.isNFT(color) !== Output.isNFT(nextColor)
+      ) {
+        this.value = Output.isNFT(nextColor) ? '' : '0';
+      }
     }
   }
 
   @autobind
   handleSubmit() {
-    const { onSubmit, color } = this.props;
-    if (onSubmit) {
-      Promise.resolve(onSubmit(this.value)).then(() => {
-        this.value = Output.isNFT(color) ? '' : '0';
-      });
+    const { onSubmit, tokens, color } = this.props;
+    const token = tokens.tokenForColor(color);
+    const value = token.isNft ? this.value : Number(this.value);
+    if (onSubmit && value) {
+      Alert.alert(
+        'Deposit',
+        `${this.value} ${token.symbol}`,
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Deposit',
+            onPress: () => {
+              this.sending = true;
+              Promise.resolve(onSubmit(this.value))
+                .then(
+                  txHash => {
+                    this.value = Output.isNFT(color) ? '' : '0';
+                  },
+                  () => Promise.resolve()
+                )
+                .then(() => {
+                  this.sending = false;
+                });
+            },
+          },
+        ],
+        { cancelable: false }
+      );
     }
   }
 
@@ -54,12 +91,16 @@ export default class DepositForm extends React.Component {
           color={color}
           onColorChange={onColorChange}
           balance={token.balance}
+          disabled={this.sending}
         />
         <View style={styles.row}>
-          <Button
-            title={`Deposit ${token.symbol}`}
-            onPress={this.handleSubmit}
-          />
+          {this.sending && <ActivityIndicator size="small" />}
+          {!this.sending && (
+            <Button
+              title={`Deposit ${token.symbol}`}
+              onPress={this.handleSubmit}
+            />
+          )}
         </View>
       </View>
     );
