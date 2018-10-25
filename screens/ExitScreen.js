@@ -1,12 +1,13 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import UTXOList from '../components/UTXOList';
 
 export default class ExitScreen extends React.Component {
   render() {
     return (
-      <ScrollView style={styles.container}>
-        <Text>UTXOs list</Text>
-      </ScrollView>
+      <View style={styles.container}>
+        <UTXOList />
+      </View>
     );
   }
 }
@@ -14,7 +15,6 @@ export default class ExitScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 15,
     backgroundColor: '#fff',
   },
 });

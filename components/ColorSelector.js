@@ -5,9 +5,9 @@ import { ScrollView, View, Text, StyleSheet, StatusBar } from 'react-native';
 import TokenValue from './TokenValue';
 
 function colorFromAddr(addr) {
-  const base = (parseInt(addr.slice(11, 21), 16) % 10) + 2;
-  const h = parseInt(addr.slice(base, base + 30), 16) % 360;
-  const s = (parseInt(addr.slice(base, base + 5), 16) % 20) - 10;
+  const base = (parseInt(addr.slice(12, 18), 16) % 10) + 2;
+  const h = parseInt(addr.slice(base, base + 10), 16) % 360;
+  const s = (parseInt(addr.slice(base, base + 10), 16) % 20) - 10;
   return `hsl(${h}, ${90 + s}%, 75%)`;
 }
 
