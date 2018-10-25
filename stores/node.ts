@@ -1,8 +1,10 @@
 import { observable } from 'mobx';
 import autobind from 'autobind-decorator';
 import getParsecWeb3 from '../utils/getParsecWeb3';
+import persistentStore, { IPersistentStore } from './persistentStore';
 
-export default class NodeStore {
+@persistentStore('node')
+export default class NodeStore implements IPersistentStore {
   @observable public latestBlock: number = 0;
 
   constructor() {
@@ -18,4 +20,17 @@ export default class NodeStore {
       }
     });
   }
+
+  @autobind
+  public toJSON() {
+    return {
+      latestBlock: this.latestBlock,
+    }
+  }
+
+  @autobind
+  public fromJSON({ latestBlock }: { latestBlock: number}) {
+    this.latestBlock = latestBlock;
+  }
 }
+

@@ -10,34 +10,14 @@
 import { AsyncStorage } from 'react-native';
 import { observable, computed, autorun } from 'mobx';
 import { Account as Web3Account } from 'web3/types';
-import getWeb3 from '../utils/getWeb3';
 import autobind from 'autobind-decorator';
+import persistentStore, { IPersistentStore } from './persistentStore';
+import getWeb3 from '../utils/getWeb3';
 
-export default class Account {
+@persistentStore('account')
+export default class Account implements IPersistentStore {
   @observable
   private _privKey: string | null = null;
-  @observable
-  public ready = false;
-
-  constructor() {
-    AsyncStorage.getItem('privKey').then(privKey => {
-      if (privKey) {
-        this._privKey = privKey;
-      }
-
-      this.ready = true;
-    });
-    autorun(this.autoSaveKey);
-  }
-
-  @autobind
-  private autoSaveKey() {
-    if (this._privKey) {
-      AsyncStorage.setItem('privKey', this._privKey);
-    } else {
-      AsyncStorage.removeItem('privKey');
-    }
-  }
 
   public set privKey(privKey: string | null) {
     this._privKey = privKey;
@@ -56,5 +36,16 @@ export default class Account {
   @computed
   public get address() {
     return this.account && this.account.address;
+  }
+
+  @autobind
+  public toJSON() {
+    return {
+      privKey: this._privKey,
+    };
+  }
+
+  public fromJSON(json: { privKey: string }) {
+    this._privKey = json.privKey;
   }
 }

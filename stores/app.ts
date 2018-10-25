@@ -1,7 +1,9 @@
 import { observable, action } from 'mobx';
 import autobind from 'autobind-decorator';
+import persistentStore, { IPersistentStore } from './persistentStore';
 
-export default class AppStore {
+@persistentStore('app')
+export default class AppStore implements IPersistentStore {
   @observable
   public color = 0;
 
@@ -9,5 +11,17 @@ export default class AppStore {
   @action
   public setColor(color: number) {
     this.color = color;
+  }
+
+  @autobind
+  public toJSON() {
+    return {
+      color: this.color,
+    };
+  }
+
+  @autobind
+  public fromJSON(json: { color: number }) {
+    this.color = json.color;
   }
 }

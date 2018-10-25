@@ -53,7 +53,7 @@ export default class ColorSelector extends Component {
             app.setColor(tokens.list[index].color);
           }}
         >
-          {tokens.list.map(token => (console.log(token),
+          {tokens.list.map(token => (
             <View style={[styles.color, { width: this.width }]} key={token.address}>
               <Text style={styles.title}>{token.name}</Text>
               <View style={styles.balances}>

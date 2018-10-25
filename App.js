@@ -18,6 +18,7 @@ export default class App extends React.Component {
       node: new NodeStore(),
       account: new Account(),
     };
+
     stores.bridge = new Bridge(stores.account, '0x2ac21a06346f075cfa4c59779f85830356ea64f3');
     stores.tokens = new Tokens(stores.account, stores.bridge, stores.node);
     stores.unspents = new Unspents(stores.bridge, stores.account, stores.node);

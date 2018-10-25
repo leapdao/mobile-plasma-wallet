@@ -128,7 +128,7 @@ export default class Token extends ContractStore {
    * Returns given value unchanged if this token is NFT.
    * @param tokenValue Amount of token cents to convert to tokens or token Id for NFT token
    */
-  public toTokens(tokenCentsValue: number, precision: number): number {
+  public toTokens(tokenCentsValue: number, precision?: number): number {
     if (this.isNft) return tokenCentsValue;
 
     if (precision) {
