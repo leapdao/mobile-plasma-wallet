@@ -305,4 +305,27 @@ export default class Token extends ContractStore {
     //   return txSuccess(tx);
     // });
   }
+
+  toJSON() {
+    return {
+      address: this.address,
+      color: this.color,
+      symbol: this.symbol,
+      name: this.name,
+      balance: this.balance,
+      plasmaBalance: this.plasmaBalance,
+      decimals: this.decimals,
+    };
+  }
+
+  static fromJSON(json: any, account: Account, node: NodeStore) {
+    const token = new Token(account, json.address, json.color, node);
+    token.symbol = json.symbol;
+    token.name = json.name;
+    token.balance = json.balance;
+    token.plasmaBalance = json.plasmaBalance;
+    token.decimals = json.decimals;
+
+    return token;
+  }
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { computed } from 'mobx';
 import { Provider, observer } from 'mobx-react/native';
 import { Platform, StatusBar, StyleSheet, View, Text } from 'react-native';
 import AppNavigator from './navigation/AppNavigator';
@@ -25,9 +26,13 @@ export default class App extends React.Component {
     this.stores = stores;
   }
 
-
   render() {
-    if (!this.stores.account.ready) {
+    if (!(
+      this.stores.app.ready &&
+      this.stores.node.ready &&
+      this.stores.account.ready &&
+      this.stores.tokens.ready
+    )) {
       return <View><Text>Loading...</Text></View>
     }
 

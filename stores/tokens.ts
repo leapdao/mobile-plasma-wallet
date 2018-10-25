@@ -5,7 +5,7 @@
  * found in the LICENSE file in the root directory of this source tree.
  */
 
-import { observable, action, computed, reaction, IObservableArray } from 'mobx';
+import { observable, action, computed, reaction, IObservableArray, toJS } from 'mobx';
 import autobind from 'autobind-decorator';
 
 import { NFT_COLOR_BASE } from '../utils';
@@ -15,8 +15,10 @@ import Token from './token';
 import Bridge from './bridge';
 import { Output } from 'parsec-lib';
 import NodeStore from './node';
+import persistentStore, { IPersistentStore } from './persistentStore';
 
-export default class Tokens {
+@persistentStore('tokens')
+export default class Tokens implements IPersistentStore {
   @observable
   public list: IObservableArray<Token> = observable.array([]);
 
@@ -58,13 +60,13 @@ export default class Tokens {
     });
   }
 
-  @computed
-  public get ready() {
-    if (!this.list) {
-      return false;
-    }
-    return !this.list.some(token => !token.ready);
-  }
+  // @computed
+  // public get ready() {
+  //   if (!this.list) {
+  //     return false;
+  //   }
+  //   return !this.list.some(token => !token.ready);
+  // }
 
   public tokenIndexForColor(color: number) {
     return Output.isNFT(color)
@@ -120,5 +122,20 @@ export default class Tokens {
         return tokens;
       })
       .then(this.addTokens);
+  }
+
+  public toJSON() {
+    return {
+      list: toJS(this.list.map(token => token.toJSON())),
+      erc20TokenCount: this.erc20TokenCount,
+      nftTokenCount: this.nftTokenCount,
+    };
+  }
+
+  public fromJSON(json: any) {
+    this.erc20TokenCount = json.erc20TokenCount;
+    this.nftTokenCount = json.nftTokenCount;
+    console.log(json.list.map((j: any) => Token.fromJSON(j, this.account, this.node)));
+    this.list = observable.array(json.list.map((j: any) => Token.fromJSON(j, this.account, this.node)));
   }
 }
