@@ -70,9 +70,10 @@ export default class TransferForm extends React.Component {
             text: 'Submit',
             onPress: () => {
               this.sending = true;
-              Promise.resolve(onSubmit(this.value))
+              Promise.resolve(onSubmit(this.address, this.value))
                 .then(
                   txHash => {
+                    this.address = '';
                     this.value = Output.isNFT(color) ? '' : '0';
                   },
                   () => Promise.resolve()

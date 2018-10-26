@@ -6,7 +6,7 @@ import autobind from 'autobind-decorator';
 import TransactionsList from '../components/TransactionsList';
 import TransferForm from '../components/TransferForm';
 
-@inject('app')
+@inject('app', 'tokens')
 @observer
 export default class TransferScreen extends React.Component {
   @autobind

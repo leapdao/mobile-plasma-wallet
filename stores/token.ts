@@ -146,51 +146,63 @@ export default class Token extends ContractStore {
   }
 
   public transfer(to: string, amount: number): Promise<any> {
-    if (!this.iWeb3 || !this.account.address) {
-      return Promise.reject('No metamask');
+    if (!this.account.address) {
+      return Promise.reject('No account');
     }
 
     const parsecWeb3 = getParsecWeb3();
-    return parsecWeb3
-      .getUnspent(this.account.address)
-      .then((unspent: Array<Unspent>) => {
-        if (this.isNft) {
-          const found = unspent.find(
-            ({ output }: Unspent) =>
-              Number(output.color) === Number(this.color) &&
-              output.value === amount
-          );
-          if (!found) {
-            throw new Error('No corresponding unspent');
+    return (
+      parsecWeb3
+        .getUnspent(this.account.address)
+        .then((unspent: Array<Unspent>) => {
+          if (this.isNft) {
+            const found = unspent.find(
+              ({ output }: Unspent) =>
+                Number(output.color) === Number(this.color) &&
+                output.value === amount
+            );
+            if (!found) {
+              throw new Error('No corresponding unspent');
+            }
+            const { outpoint } = found;
+            const inputs = [new Input(outpoint)];
+            const outputs = [new Output(amount, to, this.color)];
+            return Tx.transfer(inputs, outputs);
           }
-          const { outpoint } = found;
-          const inputs = [new Input(outpoint)];
-          const outputs = [new Output(amount, to, this.color)];
-          return Tx.transfer(inputs, outputs);
-        }
 
-        const inputs = helpers.calcInputs(
-          unspent,
-          this.account.address as string,
-          amount,
-          this.color
-        );
-        const outputs = helpers.calcOutputs(
-          unspent,
-          inputs,
-          this.account.address as string,
-          to,
-          amount,
-          this.color
-        );
-        return Tx.transfer(inputs, outputs);
-      })
-      .then((tx: Tx<any>) => tx.signWeb3(this.iWeb3 as Web3))
-      .then((signedTx: Tx<any>) => {
-        return {
-          futureReceipt: parsecWeb3.eth.sendSignedTransaction(signedTx.toRaw()),
-        };
-      });
+          const inputs = helpers.calcInputs(
+            unspent,
+            this.account.address as string,
+            amount,
+            this.color
+          );
+          const outputs = helpers.calcOutputs(
+            unspent,
+            inputs,
+            this.account.address as string,
+            to,
+            amount,
+            this.color
+          );
+          console.log(unspent, inputs, outputs);
+          return Tx.transfer(inputs, outputs);
+        })
+        .then((tx: Tx<any>) => {
+          if (!this.account.account) {
+            throw new Error('No account');
+          }
+          return tx.signAll(this.account.account.privateKey);
+        })
+        // .then((tx: Tx<any>) => tx.signWeb3(this.iWeb3 as Web3))
+        .then((signedTx: Tx<any>) => {
+          console.log(signedTx);
+          return {
+            futureReceipt: parsecWeb3.eth.sendSignedTransaction(
+              signedTx.toRaw()
+            ),
+          };
+        })
+    );
   }
 
   // public approveAndCall(to: string, value: number, data: string): Promise<any> {
