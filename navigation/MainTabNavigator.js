@@ -9,6 +9,7 @@ import TabBarIcon from '../components/TabBarIcon';
 import DepositScreen from '../screens/DepositScreen';
 import TransferScreen from '../screens/TransferScreen';
 import ExitScreen from '../screens/ExitScreen';
+import AccountScreen from '../screens/AccountScreen';
 import ColorSelector from '../components/ColorSelector';
 
 const stackNavigatorOptions = {
@@ -68,10 +69,25 @@ ExitStack.navigationOptions = {
   ),
 };
 
+const AccountStack = createStackNavigator({
+  Account: AccountScreen,
+});
+
+AccountStack.navigationOptions = {
+  tabBarLabel: 'Account',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={Platform.OS === 'ios' ? `user` : 'md-options'}
+    />
+  ),
+};
+
 const TabNavigator = createBottomTabNavigator({
   DepositStack,
   TransferStack,
   ExitStack,
+  AccountStack,
 });
 
 export default TabNavigator;
