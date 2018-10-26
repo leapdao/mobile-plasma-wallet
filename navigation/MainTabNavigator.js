@@ -29,11 +29,7 @@ DepositStack.navigationOptions = {
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-log-in${focused ? '' : '-outline'}`
-          : 'md-information-circle'
-      }
+      name={Platform.OS === 'ios' ? `login` : 'md-information-circle'}
     />
   ),
 };
@@ -50,11 +46,7 @@ TransferStack.navigationOptions = {
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-swap${focused ? '' : '-outline'}`
-          : 'md-swap'
-      }
+      name={Platform.OS === 'ios' ? `swap` : 'md-swap'}
     />
   ),
 };
@@ -71,11 +63,7 @@ ExitStack.navigationOptions = {
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-log-out${focused ? '' : '-outline'}`
-          : 'md-options'
-      }
+      name={Platform.OS === 'ios' ? `logout` : 'md-options'}
     />
   ),
 };

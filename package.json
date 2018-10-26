@@ -42,6 +42,7 @@
     "react-native-randombytes": "^3.5.1",
     "react-native-tcp": "^3.3.0",
     "react-native-udp": "^2.3.1",
+    "react-native-vector-icons": "^6.0.2",
     "react-navigation": "^2.18.1",
     "readable-stream": "^1.0.33",
     "stream-browserify": "^1.0.0",
