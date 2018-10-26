@@ -286,8 +286,11 @@ export default class Token extends ContractStore {
   * @returns Promise resolved when allowance is enough for the transfer
   */
   public maybeApprove(spender: string, value: number): any {
+    console.log('maybeApprove', spender, value);
     return this.hasEnoughAllowance(spender, value).then(hasEnoughAllowance => {
+      console.log('hasEnoughAllowance');
       if (hasEnoughAllowance) return;
+      console.log('hasEnoughAllowance', true);
 
       if (!this.account.account) {
         throw new Error('No account');

@@ -60,6 +60,7 @@ export default class DepositForm extends React.Component {
               Promise.resolve(onSubmit(this.value))
                 .then(
                   txHash => {
+                    console.log('deposit', txHash);
                     this.value = Output.isNFT(color) ? '' : '0';
                   },
                   () => Promise.resolve()

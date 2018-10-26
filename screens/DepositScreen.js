@@ -17,9 +17,11 @@ export default class DepositScreen extends React.Component {
     if (token) {
       return bridge.deposit(token, token.toCents(value)).then(
         ({ futureReceipt }) => {
+          console.log(futureReceipt);
           return new Promise((resolve, reject) => {
             futureReceipt.once('transactionHash', resolve);
             futureReceipt.once('error', reject);
+            futureReceipt.then(r => resolve(r.transactionHash));
           });
         },
         err => {

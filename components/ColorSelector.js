@@ -8,7 +8,7 @@ function colorFromAddr(addr) {
   const base = (parseInt(addr.slice(12, 18), 16) % 10) + 2;
   const h = parseInt(addr.slice(base, base + 10), 16) % 360;
   const s = (parseInt(addr.slice(base, base + 10), 16) % 20) - 10;
-  return `hsl(${h}, ${90 + s}%, 75%)`;
+  return `hsl(${h}, ${30 + s}%, 35%)`;
 }
 
 @inject('app', 'tokens')
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#000',
+    color: '#FFF',
   },
   balances: {
     flexDirection: 'row',
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   },
   balance: {
     marginHorizontal: 5,
-    color: '#000',
+    color: '#FFF',
   },
   dots: {
     flexDirection: 'row',

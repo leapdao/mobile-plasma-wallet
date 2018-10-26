@@ -5,7 +5,14 @@
  * found in the LICENSE file in the root directory of this source tree.
  */
 
-import { observable, action, computed, reaction, IObservableArray, toJS } from 'mobx';
+import {
+  observable,
+  action,
+  computed,
+  reaction,
+  IObservableArray,
+  toJS,
+} from 'mobx';
 import autobind from 'autobind-decorator';
 
 import { NFT_COLOR_BASE } from '../utils';
@@ -39,19 +46,22 @@ export default class Tokens implements IPersistentStore {
     reaction(
       () => this.bridge.events,
       () => {
-        if(this.bridge.events) {
+        if (this.bridge.events) {
           this.bridge.events.on('NewToken', this.loadTokens.bind(this));
         }
       }
     );
 
     // ready value would be changed in persistentStore decorator
-    reaction(() => this.ready, (ready, r) => {
-      if (ready) {
-        this.init();
-        r.dispose();
+    reaction(
+      () => this.ready,
+      (ready, r) => {
+        if (ready) {
+          this.init();
+          r.dispose();
+        }
       }
-    })
+    );
   }
 
   @autobind
@@ -145,7 +155,11 @@ export default class Tokens implements IPersistentStore {
   public fromJSON(json: any) {
     this.erc20TokenCount = json.erc20TokenCount;
     this.nftTokenCount = json.nftTokenCount;
-    console.log(json.list.map((j: any) => Token.fromJSON(j, this.account, this.node)));
-    this.list = observable.array(json.list.map((j: any) => Token.fromJSON(j, this.account, this.node)));
+    console.log(
+      json.list.map((j: any) => Token.fromJSON(j, this.account, this.node))
+    );
+    this.list = observable.array(
+      json.list.map((j: any) => Token.fromJSON(j, this.account, this.node))
+    );
   }
 }

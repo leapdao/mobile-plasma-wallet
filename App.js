@@ -1,6 +1,13 @@
 import React from 'react';
 import { Provider, observer } from 'mobx-react/native';
-import { Platform, StatusBar, StyleSheet, View, ActivityIndicator } from 'react-native';
+import {
+  Platform,
+  StatusBar,
+  StyleSheet,
+  View,
+  ActivityIndicator,
+  AsyncStorage,
+} from 'react-native';
 import AppNavigator from './navigation/AppNavigator';
 import AppStore from './stores/app';
 import NodeStore from './stores/node';
@@ -19,20 +26,30 @@ export default class App extends React.Component {
       account: new Account(),
     };
 
-    stores.bridge = new Bridge(stores.account, '0x2ac21a06346f075cfa4c59779f85830356ea64f3');
+    stores.bridge = new Bridge(
+      stores.account,
+      '0x2ac21a06346f075cfa4c59779f85830356ea64f3'
+    );
     stores.tokens = new Tokens(stores.account, stores.bridge, stores.node);
     stores.unspents = new Unspents(stores.bridge, stores.account, stores.node);
     this.stores = stores;
+    // AsyncStorage.clear();
   }
 
   render() {
-    if (!(
-      this.stores.app.ready &&
-      this.stores.node.ready &&
-      this.stores.account.ready &&
-      this.stores.tokens.ready
-    )) {
-      return <View style={styles.loader}><ActivityIndicator size="large" /></View>
+    if (
+      !(
+        this.stores.app.ready &&
+        this.stores.node.ready &&
+        this.stores.account.ready &&
+        this.stores.tokens.ready
+      )
+    ) {
+      return (
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" />
+        </View>
+      );
     }
 
     return (
@@ -55,5 +72,5 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  }
+  },
 });

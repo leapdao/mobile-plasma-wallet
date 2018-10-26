@@ -20,10 +20,13 @@ export default class Bridge extends ContractStore {
   }
 
   public deposit(token: Token, amount: number): Promise<any> {
+    console.log('deposit', token.symbol, amount);
     return token.maybeApprove(this.address, amount).then(() => {
+      console.log('approved');
       if (!this.account.account) {
         throw new Error('No Account');
       }
+      console.log('has account');
       return sendTransaction(getWeb3(), {
         method: this.contract.methods.deposit(
           this.account.address,
@@ -37,15 +40,15 @@ export default class Bridge extends ContractStore {
   }
 
   public startExit(proof: string[], outIndex: number) {
-    if (!this.iContract || !this.account.address) {
-      return;
+    if (!this.account.account) {
+      throw new Error('No Account');
     }
 
-    const tx = this.iContract.methods.startExit(proof, outIndex).send({
-      from: this.account.address,
+    return sendTransaction(getWeb3(), {
+      method: this.contract.methods.startExit(proof, outIndex),
+      to: this.address,
+      account: this.account.account,
     });
-
-    return tx;
   }
 
   public finalizeExits(color: number) {

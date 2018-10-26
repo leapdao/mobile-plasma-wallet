@@ -5,11 +5,21 @@
  * found in the LICENSE file in the root directory of this source tree.
  */
 
-import { observable, reaction, computed } from 'mobx';
-import { Unspent, Tx, Period, Block, Input, Output, Type } from 'parsec-lib';
+import { observable, reaction, computed, action, toJS } from 'mobx';
+import {
+  Unspent,
+  Tx,
+  Period,
+  Block,
+  Input,
+  Output,
+  Type,
+  Outpoint,
+} from 'parsec-lib';
 import { Transaction, Eth } from 'web3/types';
 import { bufferToHex } from 'ethereumjs-util';
 
+import persistentStore, { IPersistentStore } from './persistentStore';
 import Bridge from './bridge';
 import Account from './account';
 import autobind from 'autobind-decorator';
@@ -24,6 +34,16 @@ interface ParsecTransaction extends Transaction {
 }
 
 type UnspentWithTx = Unspent & { transaction: ParsecTransaction };
+
+function entriesToObject<T>(entries: [string, T][]): { [key: string]: T } {
+  return entries.reduce(
+    (obj, [key, value]) => ({
+      ...obj,
+      [key]: value,
+    }),
+    {}
+  );
+}
 
 function makePeriodFromRange(startBlock: number, endBlock: number) {
   // ToDo: fix typing in lib
@@ -47,9 +67,13 @@ function makePeriodFromRange(startBlock: number, endBlock: number) {
   });
 }
 
-export default class Unspents {
+@persistentStore('unspents1')
+export default class Unspents implements IPersistentStore {
   @observable
   public list: Array<UnspentWithTx> = observable.array([]);
+
+  @observable
+  public pendingExits: { [key: string]: string } = {};
 
   @observable
   private latestBlock: number = 0;
@@ -73,6 +97,37 @@ export default class Unspents {
     reaction(() => this.node.latestBlock, this.fetchUnspents);
   }
 
+  public toJSON() {
+    return {
+      list: toJS(
+        this.list.map(u => ({
+          outpoint: u.outpoint.hex(),
+          output: u.output,
+          transaction: u.transaction,
+        }))
+      ),
+      pendingExits: entriesToObject(
+        Object.entries(toJS(this.pendingExits)).filter(
+          ([, value]) => value === 'sent'
+        )
+      ),
+    };
+  }
+
+  public fromJSON(json: any) {
+    console.log(json);
+    this.list = observable.array(
+      json.list.map((u: any) => {
+        return {
+          outpoint: Outpoint.fromRaw(u.outpoint),
+          output: u.output,
+          transaction: u.transaction,
+        };
+      })
+    );
+    this.pendingExits = json.pendingExits;
+  }
+
   @computed
   public get periodBlocksRange() {
     if (this.latestBlock) {
@@ -88,7 +143,19 @@ export default class Unspents {
   @autobind
   private clearUnspents() {
     this.list = observable.array([]);
+    this.pendingExits = {};
     this.latestBlock = 0;
+  }
+
+  @autobind
+  @action
+  private updateUnspents(list: Array<UnspentWithTx>) {
+    this.list = observable.array(list);
+    this.pendingExits = entriesToObject(
+      Object.entries(this.pendingExits).filter(([pending]) => {
+        return this.list.some(u => u.outpoint.hex() === pending);
+      })
+    );
   }
 
   @autobind
@@ -114,9 +181,7 @@ export default class Unspents {
               return unspent as UnspentWithTx[];
             });
           })
-          .then((unspent: Array<UnspentWithTx>) => {
-            this.list = observable.array(unspent);
-          });
+          .then(this.updateUnspents);
       }
     }
   }
@@ -127,12 +192,26 @@ export default class Unspents {
     const periodNumber = Math.floor(blockNumber / 32);
     const startBlock = periodNumber * 32;
     const endBlock = periodNumber * 32 + 32;
-    makePeriodFromRange(startBlock, endBlock).then(period =>
-      this.bridge.startExit(
-        period.proof(Tx.fromRaw(raw)),
-        unspent.outpoint.index
+    const hex = unspent.outpoint.hex();
+    this.pendingExits[hex] = 'pending';
+
+    const removePending = () => {
+      delete this.pendingExits[hex];
+    };
+
+    return makePeriodFromRange(startBlock, endBlock)
+      .then(period =>
+        this.bridge.startExit(
+          period.proof(Tx.fromRaw(raw)),
+          unspent.outpoint.index
+        )
       )
-    );
+      .then(({ futureReceipt }) => {
+        this.pendingExits[hex] = 'sent';
+        futureReceipt.once('error', removePending);
+        return { futureReceipt };
+      })
+      .catch(removePending);
   }
 
   public listForColor(color: number) {
