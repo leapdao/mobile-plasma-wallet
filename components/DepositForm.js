@@ -12,6 +12,7 @@ import {
 import autobind from 'autobind-decorator';
 
 import AmountInput from './AmountInput';
+import BottomPane from './BottomPane';
 
 @inject('tokens')
 @observer
@@ -85,7 +86,7 @@ export default class DepositForm extends React.Component {
     }
 
     return (
-      <View style={styles.container}>
+      <BottomPane>
         <AmountInput
           value={this.value}
           onChange={this.handleChange}
@@ -102,19 +103,12 @@ export default class DepositForm extends React.Component {
             />
           )}
         </View>
-      </View>
+      </BottomPane>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    borderTopColor: '#eaeaea',
-    borderTopWidth: 1,
-    paddingBottom: 0,
-    paddingHorizontal: 20,
-    paddingTop: 15,
-  },
   row: {
     flexDirection: 'row',
     justifyContent: 'center',

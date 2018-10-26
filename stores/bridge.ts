@@ -52,14 +52,14 @@ export default class Bridge extends ContractStore {
   }
 
   public finalizeExits(color: number) {
-    if (!this.iContract || !this.account.address) {
-      return;
+    if (!this.account.account) {
+      throw new Error('No Account');
     }
 
-    const tx = this.iContract.methods.finalizeExits(color).send({
-      from: this.account.address,
+    return sendTransaction(getWeb3(), {
+      method: this.contract.methods.finalizeExits(color),
+      to: this.address,
+      account: this.account.account,
     });
-
-    return tx;
   }
 }

@@ -8,13 +8,13 @@ import {
   View,
   ActivityIndicator,
   Alert,
-  TextInput,
 } from 'react-native';
 import autobind from 'autobind-decorator';
 import { isValidAddress } from 'ethereumjs-util';
 
 import AmountInput from './AmountInput';
 import Input from './Input';
+import BottomPane from './BottomPane';
 
 @inject('tokens')
 @observer
@@ -97,7 +97,7 @@ export default class TransferForm extends React.Component {
     }
 
     return (
-      <View style={styles.container}>
+      <BottomPane>
         <AmountInput
           value={this.value}
           onChange={this.handleChange}
@@ -119,7 +119,7 @@ export default class TransferForm extends React.Component {
             />
           )}
         </View>
-      </View>
+      </BottomPane>
     );
   }
 }
