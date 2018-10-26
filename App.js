@@ -26,19 +26,18 @@ export default class App extends React.Component {
       account: new Account(),
     };
 
-    stores.bridge = new Bridge(
-      stores.account,
-      '0x2ac21a06346f075cfa4c59779f85830356ea64f3'
-    );
+    stores.bridge = new Bridge(stores.account);
     stores.tokens = new Tokens(stores.account, stores.bridge, stores.node);
     stores.unspents = new Unspents(stores.bridge, stores.account, stores.node);
     this.stores = stores;
+    // stores.bridge.address = '0x2ac21a06346f075cfa4c59779f85830356ea64f3';
     // AsyncStorage.clear();
   }
 
   render() {
     if (
       !(
+        this.stores.bridge.ready &&
         this.stores.app.ready &&
         this.stores.node.ready &&
         this.stores.account.ready &&

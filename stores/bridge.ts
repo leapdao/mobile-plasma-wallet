@@ -13,10 +13,40 @@ import ContractStore from './contractStore';
 
 import getWeb3 from '../utils/getWeb3';
 import sendTransaction from '../utils/sendTransaction';
+import { reaction, observable } from 'mobx';
+import getParsecWeb3 from '../utils/getParsecWeb3';
+import persistentStore, { IPersistentStore } from './persistentStore';
 
-export default class Bridge extends ContractStore {
+@persistentStore('bridge')
+export default class Bridge extends ContractStore implements IPersistentStore {
+  @observable
+  public ready: boolean = false;
+
   constructor(private account: Account, address?: string) {
     super(bridgeAbi, address as string);
+
+    reaction(
+      () => this.ready,
+      () => {
+        if (!this.address) {
+          getParsecWeb3()
+            .getConfig()
+            .then((config: any) => {
+              this.address = config.bridgeAddr;
+            });
+        }
+      }
+    );
+  }
+
+  public toJSON() {
+    return {
+      address: this.address,
+    };
+  }
+
+  public fromJSON(json: any) {
+    this.address = json.address;
   }
 
   public deposit(token: Token, amount: number): Promise<any> {

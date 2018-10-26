@@ -54,9 +54,9 @@ export default class Tokens implements IPersistentStore {
 
     // ready value would be changed in persistentStore decorator
     reaction(
-      () => this.ready,
-      (ready, r) => {
-        if (ready) {
+      () => this.ready && !!this.bridge.address,
+      (_, r) => {
+        if (this.ready) {
           this.init();
           r.dispose();
         }
