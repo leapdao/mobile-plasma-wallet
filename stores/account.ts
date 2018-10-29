@@ -27,20 +27,22 @@ export default class Account implements IPersistentStore {
 
     const address = this.address;
 
-    return this.node.blocks.reduce(
-      (txs, block) => {
-        return txs.concat(
-          block.transactions.filter(tx => {
-            return (
-              tx.from !== tx.to &&
-              ((tx.from || '').toLowerCase() === address ||
-                (tx.to || '').toLowerCase() === address)
-            );
-          })
-        );
-      },
-      [] as Transaction[]
-    );
+    return this.node.blocks
+      .reduce(
+        (txs, block) => {
+          return txs.concat(
+            block.transactions.filter(tx => {
+              return (
+                tx.from !== tx.to &&
+                ((tx.from || '').toLowerCase() === address ||
+                  (tx.to || '').toLowerCase() === address)
+              );
+            })
+          );
+        },
+        [] as Transaction[]
+      )
+      .sort((a, b) => b.blockNumber - a.blockNumber);
   }
 
   @observable

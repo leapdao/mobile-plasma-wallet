@@ -2,6 +2,8 @@ import React, { Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import TokenValue from './TokenValue';
+import { shortenHex } from '../utils';
+import { Output } from 'parsec-lib';
 
 @inject('account')
 @observer
@@ -12,24 +14,38 @@ export default class DepositScreen extends React.Component {
 
   render() {
     const { account } = this.props;
+    const isIcoming = tx => (tx.to || '').toLowerCase() === account.address;
+    const signedValue = tx => {
+      if (Output.isNFT(tx.color)) {
+        return `${isIcoming(tx) ? '' : '−'}${tx.value}`;
+      }
+
+      return tx.value * (isIcoming(tx) ? 1 : -1);
+    };
     return (
       <ScrollView>
-        {account.transactions.map(item => (
-          <View style={styles.item} key={item.hash}>
-            <TokenValue value={item.value} color={item.color} />
-            {!item.from && <Text>Deposit</Text>}
-            {!item.to && <Text>Exit</Text>}
-            {!!item.to &&
-              !!item.from && (
+        {account.transactions.map(tx => (
+          <View style={styles.item} key={tx.hash}>
+            <TokenValue
+              value={signedValue(tx)}
+              color={tx.color}
+              style={styles.value}
+            />
+            {!tx.from && <Text>Deposit</Text>}
+            {!tx.to && <Text>Exit</Text>}
+            {!!tx.to &&
+              !!tx.from && (
                 <Fragment>
-                  {item.to.toLowerCase() === account.address && (
-                    <Text>From {item.from}</Text>
+                  {tx.to.toLowerCase() === account.address && (
+                    <Text>From {shortenHex(tx.from)}</Text>
                   )}
-                  {item.from.toLowerCase() === account.address && (
-                    <Text>To {item.to}</Text>
+                  {tx.from.toLowerCase() === account.address && (
+                    <Text>To {shortenHex(tx.to)}</Text>
                   )}
                 </Fragment>
               )}
+
+            <Text>Height: {tx.blockNumber}</Text>
           </View>
         ))}
       </ScrollView>
@@ -48,5 +64,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderTopColor: '#ccc',
     borderTopWidth: 1,
+  },
+  value: {
+    fontWeight: 'bold',
   },
 });
