@@ -115,7 +115,6 @@ export default class Unspents implements IPersistentStore {
   }
 
   public fromJSON(json: any) {
-    console.log(json);
     this.list = observable.array(
       json.list.map((u: any) => {
         return {

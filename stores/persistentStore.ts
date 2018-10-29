@@ -1,8 +1,8 @@
-import { autorun, observable, decorate } from 'mobx';
+import { autorun, observable, decorate, action } from 'mobx';
 import { AsyncStorage } from 'react-native';
 
 type Store = {
-  new(...args : any[]): IPersistentStore;
+  new (...args: any[]): IPersistentStore;
 };
 
 export interface IPersistentStore {
@@ -16,17 +16,17 @@ export default (key: string) => <T extends Store>(StoreClass: T) => {
       super(...args);
 
       autorun(this.autosave.bind(this));
-      AsyncStorage.getItem(key).then(data => {
-        if (data) {
-          this.fromJSON(JSON.parse(data));
-        }
-        this.ready = true;
-      });
-
-      observable(this, 'ready');
+      AsyncStorage.getItem(key).then(this.updateData.bind(this));
     }
 
     public ready: boolean = false;
+
+    public updateData(data: string | null) {
+      if (data) {
+        this.fromJSON(JSON.parse(data));
+      }
+      this.ready = true;
+    }
 
     private autosave() {
       if (this.ready) {
@@ -37,6 +37,7 @@ export default (key: string) => <T extends Store>(StoreClass: T) => {
 
   decorate(DecoratedStoreClass, {
     ready: observable,
+    updateData: action,
   });
 
   return DecoratedStoreClass;

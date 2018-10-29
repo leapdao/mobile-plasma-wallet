@@ -1,7 +1,9 @@
-import React from 'react';
-import { observer } from 'mobx-react';
-import { View, Text, StyleSheet, FlatList, ScrollView } from 'react-native';
+import React, { Fragment } from 'react';
+import { observer, inject } from 'mobx-react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import TokenValue from './TokenValue';
 
+@inject('account')
 @observer
 export default class DepositScreen extends React.Component {
   static navigationOptions = {
@@ -9,51 +11,28 @@ export default class DepositScreen extends React.Component {
   };
 
   render() {
-    const transactions = [
-      { value: 1, color: 0, from: '0x000', to: '0x000', hash: '0x000001' },
-      { value: 0.3, color: 0, from: '0x000', to: '0x000', hash: '0x000002' },
-      { value: 1, color: 0, from: '0x000', to: '0x000', hash: '0x000003' },
-      { value: 1, color: 0, from: '0x000', to: '0x000', hash: '0x000004' },
-      { value: 0.2, color: 0, from: '0x000', to: '0x000', hash: '0x000005' },
-      { value: 1, color: 0, from: '0x000', to: '0x000', hash: '0x000006' },
-      { value: 4, color: 0, from: '0x000', to: '0x000', hash: '0x000007' },
-      { value: 10, color: 0, from: '0x000', to: '0x000', hash: '0x000008' },
-      { value: 20, color: 0, from: '0x000', to: '0x000', hash: '0x000009' },
-      { value: 1, color: 0, from: '0x000', to: '0x000', hash: '0x000010' },
-    ];
+    const { account } = this.props;
     return (
       <ScrollView>
-        {transactions.map(item => (
+        {account.transactions.map(item => (
           <View style={styles.item} key={item.hash}>
-            <Text>
-              {item.from} → {item.to}
-            </Text>
-            <Text>
-              {item.value} {item.color}
-            </Text>
+            <TokenValue value={item.value} color={item.color} />
+            {!item.from && <Text>Deposit</Text>}
+            {!item.to && <Text>Exit</Text>}
+            {!!item.to &&
+              !!item.from && (
+                <Fragment>
+                  {item.to.toLowerCase() === account.address && (
+                    <Text>From {item.from}</Text>
+                  )}
+                  {item.from.toLowerCase() === account.address && (
+                    <Text>To {item.to}</Text>
+                  )}
+                </Fragment>
+              )}
           </View>
         ))}
       </ScrollView>
-    );
-    return (
-      <FlatList
-        data={transactions}
-        keyExtractor={item => item.hash}
-        renderItem={({ item }) => {
-          return (
-            <View style={styles.item}>
-              <Text>
-                {item.from} → {item.to}
-              </Text>
-              <Text>
-                {item.value} {item.color}
-              </Text>
-            </View>
-          );
-        }}
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-      />
     );
   }
 }

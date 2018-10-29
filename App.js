@@ -23,9 +23,9 @@ export default class App extends React.Component {
     const stores = {
       app: new AppStore(),
       node: new NodeStore(),
-      account: new Account(),
     };
 
+    stores.account = new Account(stores.node);
     stores.bridge = new Bridge(stores.account);
     stores.tokens = new Tokens(stores.account, stores.bridge, stores.node);
     stores.unspents = new Unspents(stores.bridge, stores.account, stores.node);

@@ -9,13 +9,40 @@
 
 import { AsyncStorage } from 'react-native';
 import { observable, computed, autorun } from 'mobx';
-import { Account as Web3Account } from 'web3/types';
+import { Account as Web3Account, Transaction } from 'web3/types';
 import autobind from 'autobind-decorator';
 import persistentStore, { IPersistentStore } from './persistentStore';
 import getWeb3 from '../utils/getWeb3';
+import NodeStore from './node';
 
 @persistentStore('account')
 export default class Account implements IPersistentStore {
+  constructor(private node: NodeStore) {}
+
+  @computed
+  public get transactions() {
+    if (!this.address) {
+      return [];
+    }
+
+    const address = this.address;
+
+    return this.node.blocks.reduce(
+      (txs, block) => {
+        return txs.concat(
+          block.transactions.filter(tx => {
+            return (
+              tx.from !== tx.to &&
+              ((tx.from || '').toLowerCase() === address ||
+                (tx.to || '').toLowerCase() === address)
+            );
+          })
+        );
+      },
+      [] as Transaction[]
+    );
+  }
+
   @observable
   private _privKey: string | null = null;
 
@@ -35,7 +62,7 @@ export default class Account implements IPersistentStore {
 
   @computed
   public get address() {
-    return this.account && this.account.address;
+    return this.account && this.account.address.toLowerCase();
   }
 
   @autobind
