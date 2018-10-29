@@ -5,7 +5,7 @@ import TokenValue from './TokenValue';
 import { shortenHex } from '../utils';
 import { Output } from 'parsec-lib';
 
-@inject('account')
+@inject('account', 'app')
 @observer
 export default class DepositScreen extends React.Component {
   static navigationOptions = {
@@ -13,7 +13,7 @@ export default class DepositScreen extends React.Component {
   };
 
   render() {
-    const { account } = this.props;
+    const { account, app } = this.props;
     const isIcoming = tx => (tx.to || '').toLowerCase() === account.address;
     const signedValue = tx => {
       if (Output.isNFT(tx.color)) {
@@ -24,7 +24,7 @@ export default class DepositScreen extends React.Component {
     };
     return (
       <ScrollView>
-        {account.transactions.map(tx => (
+        {account.transactions.filter(tx => tx.color === app.color).map(tx => (
           <View style={styles.item} key={tx.hash}>
             <TokenValue
               value={signedValue(tx)}
