@@ -11,6 +11,7 @@ import {
   StatusBar,
   Button,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import TokenValue from './TokenValue';
 
@@ -25,7 +26,7 @@ function colorFromAddr(addr) {
 @observer
 export default class ColorSelector extends Component {
   @observable
-  width = null;
+  width = Dimensions.get('window').width;
 
   @observable
   contentOffsetX = null;
@@ -63,15 +64,15 @@ export default class ColorSelector extends Component {
         <ScrollView
           ref={view => {
             this.scrollView = view;
-            this.updateScrollPosition(app.color);
-          }}
-          onLayout={e => {
-            this.width = e.nativeEvent.layout.width;
           }}
           contentContainerStyle={styles.contentContainer}
           pagingEnabled={true}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
+          contentOffset={{
+            x: tokens.tokenIndexForColor(app.color) * this.width,
+            y: 0,
+          }}
           onScroll={e => {
             this.contentOffsetX = e.nativeEvent.contentOffset.x;
             const index = Math.round(this.contentOffsetX / this.width);
@@ -112,23 +113,14 @@ export default class ColorSelector extends Component {
           ))}
         </ScrollView>
         {onDepositPress && (
-          <View style={{ position: 'absolute', top: 34, right: 10 }}>
+          <View style={[styles.navButtonWrapper, styles.depositButtonWrapper]}>
             <TouchableOpacity onPress={onDepositPress}>
-              <Text
-                style={{
-                  fontSize: 17,
-                  fontWeight: 'bold',
-                  color: '#FFF',
-                  padding: 5,
-                }}
-              >
-                + deposit
-              </Text>
+              <Text style={styles.depositButtonText}>+ deposit</Text>
             </TouchableOpacity>
           </View>
         )}
         {onBackPress && (
-          <View style={{ position: 'absolute', top: 34, left: 5 }}>
+          <View style={[styles.navButtonWrapper, styles.backButtonWrapper]}>
             <HeaderBackButton tintColor="white" onPress={onBackPress} />
           </View>
         )}
@@ -199,5 +191,21 @@ const styles = StyleSheet.create({
   },
   activeDot: {
     opacity: 0.5,
+  },
+  navButtonWrapper: {
+    position: 'absolute',
+    top: 34,
+  },
+  depositButtonWrapper: {
+    right: 10,
+  },
+  backButtonWrapper: {
+    left: 5,
+  },
+  depositButtonText: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#FFF',
+    padding: 5,
   },
 });

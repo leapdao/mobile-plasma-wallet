@@ -56,6 +56,7 @@ export default class TransferForm extends React.Component {
     const token = tokens.tokenForColor(color);
     const value = token.isNft ? this.value : Number(this.value);
     const address = this.address.trim();
+    console.log(onSubmit, value, address, isValidAddress(address));
 
     if (onSubmit && value && isValidAddress(address)) {
       Alert.alert(
