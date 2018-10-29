@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
 import { inject, observer } from 'mobx-react/native';
 import { reaction } from 'mobx';
 
@@ -34,7 +34,7 @@ export default class KeyScreen extends React.Component {
     // const { account } = this.props;
     return (
       <View style={styles.container}>
-        <Text>Loading...</Text>
+        <ActivityIndicator size="large" />
       </View>
     );
   }
@@ -43,6 +43,7 @@ export default class KeyScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
