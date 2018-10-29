@@ -86,7 +86,7 @@ export default class DepositForm extends React.Component {
     }
 
     return (
-      <BottomPane>
+      <BottomPane style={{ paddingBottom: 20 }}>
         <AmountInput
           value={this.value}
           onChange={this.handleChange}

@@ -1,7 +1,17 @@
 import React, { Component } from 'react';
 import { observable, reaction } from 'mobx';
 import { observer, inject } from 'mobx-react/native';
-import { ScrollView, View, Text, StyleSheet, StatusBar } from 'react-native';
+import { HeaderBackButton } from 'react-navigation';
+import Icon from 'react-native-vector-icons/AntDesign';
+import {
+  ScrollView,
+  View,
+  Text,
+  StyleSheet,
+  StatusBar,
+  Button,
+  TouchableOpacity,
+} from 'react-native';
 import TokenValue from './TokenValue';
 
 function colorFromAddr(addr) {
@@ -47,7 +57,7 @@ export default class ColorSelector extends Component {
   }
 
   render() {
-    const { app, tokens } = this.props;
+    const { app, tokens, onDepositPress, onBackPress } = this.props;
     return (
       <View style={styles.container}>
         <ScrollView
@@ -101,6 +111,27 @@ export default class ColorSelector extends Component {
             </View>
           ))}
         </ScrollView>
+        {onDepositPress && (
+          <View style={{ position: 'absolute', top: 34, right: 10 }}>
+            <TouchableOpacity onPress={onDepositPress}>
+              <Text
+                style={{
+                  fontSize: 17,
+                  fontWeight: 'bold',
+                  color: '#FFF',
+                  padding: 5,
+                }}
+              >
+                + deposit
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        {onBackPress && (
+          <View style={{ position: 'absolute', top: 34, left: 5 }}>
+            <HeaderBackButton tintColor="white" onPress={onBackPress} />
+          </View>
+        )}
         <View style={styles.dots}>
           {tokens.list.map((token, i) => (
             <View

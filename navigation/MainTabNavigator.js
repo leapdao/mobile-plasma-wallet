@@ -14,26 +14,34 @@ import ColorSelector from '../components/ColorSelector';
 
 const stackNavigatorOptions = {
   navigationOptions: {
-    header: <ColorSelector />,
+    header: props => {
+      return (
+        <ColorSelector
+          onDepositPress={() => {
+            props.navigation.push('Deposit');
+          }}
+        />
+      );
+    },
   },
 };
 
-const DepositStack = createStackNavigator(
-  {
-    Deposit: DepositScreen,
-  },
-  stackNavigatorOptions
-);
+// const DepositStack = createStackNavigator(
+//   {
+//     Deposit: DepositScreen,
+//   },
+//   stackNavigatorOptions
+// );
 
-DepositStack.navigationOptions = {
-  tabBarLabel: 'Deposit',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? `login` : 'md-information-circle'}
-    />
-  ),
-};
+// DepositStack.navigationOptions = {
+//   tabBarLabel: 'Deposit',
+//   tabBarIcon: ({ focused }) => (
+//     <TabBarIcon
+//       focused={focused}
+//       name={Platform.OS === 'ios' ? `login` : 'md-information-circle'}
+//     />
+//   ),
+// };
 
 const TransferStack = createStackNavigator(
   {
@@ -84,7 +92,7 @@ AccountStack.navigationOptions = {
 };
 
 const TabNavigator = createBottomTabNavigator({
-  DepositStack,
+  // DepositStack,
   TransferStack,
   ExitStack,
   AccountStack,
