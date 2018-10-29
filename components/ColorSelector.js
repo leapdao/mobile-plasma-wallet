@@ -1,19 +1,20 @@
 import React, { Component } from 'react';
-import { observable, reaction } from 'mobx';
+import { observable, reaction, action } from 'mobx';
 import { observer, inject } from 'mobx-react/native';
 import { HeaderBackButton } from 'react-navigation';
-import Icon from 'react-native-vector-icons/AntDesign';
 import {
   ScrollView,
   View,
   Text,
   StyleSheet,
   StatusBar,
-  Button,
+  Animated,
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
+import autobind from 'autobind-decorator';
 import TokenValue from './TokenValue';
+import { range } from '../utils/range';
 
 function colorFromAddr(addr) {
   const base = (parseInt(addr.slice(12, 18), 16) % 10) + 2;
@@ -30,6 +31,8 @@ export default class ColorSelector extends Component {
 
   @observable
   contentOffsetX = null;
+
+  backgroundColor = new Animated.Value(0);
 
   constructor(props) {
     super(props);
@@ -48,7 +51,6 @@ export default class ColorSelector extends Component {
     const index = this.props.tokens.tokenIndexForColor(color);
     const offsetX = index * this.width;
     if (offsetX !== this.contentOffsetX && this.scrollView && this.width) {
-      // console.log(index * this.width, this.contentOffsetX);
       this.scrollView.scrollTo({
         x: offsetX,
         y: 0,
@@ -57,27 +59,58 @@ export default class ColorSelector extends Component {
     }
   }
 
+  @autobind
+  @action
+  handleScroll(e) {
+    this.contentOffsetX = e.nativeEvent.contentOffset.x;
+    this.backgroundColor.setValue(this.contentOffsetX);
+  }
+
+  @autobind
+  @action
+  handleMomentumScrollEnd(e) {
+    const { app, tokens } = this.props;
+    this.contentOffsetX = e.nativeEvent.contentOffset.x;
+    const index = Math.round(this.contentOffsetX / this.width);
+    app.setColor(tokens.list[index].color);
+  }
+
+  @autobind
+  handleRef(view) {
+    this.scrollView = view;
+  }
+
   render() {
     const { app, tokens, onDepositPress, onBackPress } = this.props;
     return (
-      <View style={styles.container}>
+      <Animated.View
+        style={[
+          styles.container,
+          {
+            backgroundColor: this.backgroundColor.interpolate({
+              inputRange: range(0, tokens.list.length - 1).map(
+                i => i * this.width
+              ),
+              outputRange: tokens.list.map(token =>
+                colorFromAddr(token.address)
+              ),
+            }),
+          },
+        ]}
+      >
         <ScrollView
-          ref={view => {
-            this.scrollView = view;
-          }}
+          ref={this.handleRef}
           contentContainerStyle={styles.contentContainer}
           pagingEnabled={true}
           horizontal={true}
+          scrollEventThrottle={16}
           showsHorizontalScrollIndicator={false}
           contentOffset={{
             x: tokens.tokenIndexForColor(app.color) * this.width,
             y: 0,
           }}
-          onScroll={e => {
-            this.contentOffsetX = e.nativeEvent.contentOffset.x;
-            const index = Math.round(this.contentOffsetX / this.width);
-            app.setColor(tokens.list[index].color);
-          }}
+          onScroll={this.handleScroll}
+          onMomentumScrollEnd={this.handleMomentumScrollEnd}
         >
           {tokens.list.map(token => (
             <View
@@ -85,7 +118,6 @@ export default class ColorSelector extends Component {
                 styles.color,
                 {
                   width: this.width,
-                  backgroundColor: colorFromAddr(token.address),
                 },
               ]}
               key={token.address}
@@ -135,7 +167,7 @@ export default class ColorSelector extends Component {
             />
           ))}
         </View>
-      </View>
+      </Animated.View>
     );
   }
 }
