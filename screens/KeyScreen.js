@@ -52,6 +52,9 @@ export default class KeyScreen extends React.Component {
           value={this.privKey}
           placeholder="Your private key"
           onChangeText={this.handlePrivKeyChange}
+          autoCapitalize="none"
+          spellCheck={false}
+          autoCorrect={false}
         />
         <Button title="Import" onPress={this.handleImport} />
       </SafeAreaView>

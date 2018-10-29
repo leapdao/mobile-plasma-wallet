@@ -110,6 +110,9 @@ export default class TransferForm extends React.Component {
         <Input
           placeholder="Receiver address"
           value={this.address}
+          autoCapitalize="none"
+          spellCheck={false}
+          autoCorrect={false}
           onChangeText={this.handleAddressChange}
         />
         <View style={styles.row}>
