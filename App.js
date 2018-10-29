@@ -30,31 +30,13 @@ export default class App extends React.Component {
     stores.tokens = new Tokens(stores.account, stores.bridge, stores.node);
     stores.unspents = new Unspents(stores.bridge, stores.account, stores.node);
     this.stores = stores;
-    // stores.bridge.address = '0x2ac21a06346f075cfa4c59779f85830356ea64f3';
     // AsyncStorage.clear();
   }
 
   render() {
-    if (
-      !(
-        this.stores.bridge.ready &&
-        this.stores.app.ready &&
-        this.stores.node.ready &&
-        this.stores.account.ready &&
-        this.stores.tokens.ready
-      )
-    ) {
-      return (
-        <View style={styles.loader}>
-          <ActivityIndicator size="large" />
-        </View>
-      );
-    }
-
     return (
       <Provider {...this.stores}>
         <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
           <AppNavigator />
         </View>
       </Provider>
