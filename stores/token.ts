@@ -83,6 +83,13 @@ export default class Token extends ContractStore {
     this.account = account;
     this.color = color;
 
+    reaction(
+      () => this.account.address,
+      () => {
+        this.balance = 0;
+        this.plasmaBalance = 0;
+      }
+    );
     autorun(this.loadBalance.bind(null, false));
     autorun(this.loadBalance.bind(null, true));
     tokenInfo(this.contract, color).then(this.setInfo);
