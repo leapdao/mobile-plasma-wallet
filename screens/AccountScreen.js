@@ -8,6 +8,7 @@ import {
   Button,
   Text,
   Image,
+  Alert,
 } from 'react-native';
 import autobind from 'autobind-decorator';
 import BottomPane from '../components/BottomPane';
@@ -21,8 +22,21 @@ export default class AccountScreen extends React.Component {
 
   @autobind
   handleReset() {
-    this.props.account.privKey = null;
-    this.props.navigation.navigate('Loading');
+    Alert.alert(
+      'Reset account',
+      '',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reset',
+          onPress: () => {
+            this.props.account.privKey = null;
+            this.props.navigation.navigate('Loading');
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   }
 
   render() {

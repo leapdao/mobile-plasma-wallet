@@ -34,7 +34,7 @@ export default class NodeStore implements IPersistentStore {
   @autobind
   private loadLatestBlock() {
     getParsecWeb3().eth.getBlockNumber((err: any, number: number) => {
-      if (this.latestBlock !== number) {
+      if (this.latestBlock !== number && number) {
         this.latestBlock = number;
       }
     });
@@ -75,6 +75,7 @@ export default class NodeStore implements IPersistentStore {
     latestFetchedBlock: number;
     blocks: Block[];
   }) {
+    console.log(json);
     this.latestBlock = json.latestBlock;
     this.latestFetchedBlock = json.latestFetchedBlock;
     this.blocks = json.blocks;
