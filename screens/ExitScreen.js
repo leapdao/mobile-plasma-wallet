@@ -1,11 +1,18 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { StyleSheet, View, Button } from 'react-native';
+import { inject } from 'mobx-react/native';
 import UTXOList from '../components/UTXOList';
 import BottomPane from '../components/BottomPane';
-import { inject } from 'mobx-react/native';
 
 @inject('unspents', 'app', 'bridge')
-export default class ExitScreen extends React.Component {
+class ExitScreen extends React.Component {
+  static propTypes = {
+    app: PropTypes.object,
+    unspents: PropTypes.object,
+    bridge: PropTypes.object,
+  };
+
   render() {
     const { app, unspents, bridge } = this.props;
     return (
@@ -29,6 +36,8 @@ export default class ExitScreen extends React.Component {
     );
   }
 }
+
+export default ExitScreen;
 
 const styles = StyleSheet.create({
   container: {

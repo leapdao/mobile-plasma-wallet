@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { StyleSheet, Button, Text, View } from 'react-native';
 import { inject, observer } from 'mobx-react/native';
 import { observable } from 'mobx';
@@ -10,7 +11,12 @@ import Input from '../components/Input';
 
 @inject('account')
 @observer
-export default class KeyScreen extends React.Component {
+class KeyScreen extends React.Component {
+  static propTypes = {
+    account: PropTypes.objectOrObservableObject,
+    navigation: PropTypes.objectOrObservableObject,
+  };
+
   @observable
   privKey = '';
 
@@ -61,6 +67,8 @@ export default class KeyScreen extends React.Component {
     );
   }
 }
+
+export default KeyScreen;
 
 const styles = StyleSheet.create({
   container: {

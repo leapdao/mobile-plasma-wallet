@@ -1,23 +1,16 @@
 import React from 'react';
 import { Provider, observer } from 'mobx-react/native';
-import {
-  Platform,
-  StatusBar,
-  StyleSheet,
-  View,
-  ActivityIndicator,
-  AsyncStorage,
-} from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import AppNavigator from './navigation/AppNavigator';
-import AppStore from './stores/app';
-import NodeStore from './stores/node';
-import Account from './stores/account';
-import Tokens from './stores/tokens';
-import Bridge from './stores/bridge';
-import Unspents from './stores/unspents';
+import AppStore from './stores/app.ts';
+import NodeStore from './stores/node.ts';
+import Account from './stores/account.ts';
+import Tokens from './stores/tokens.ts';
+import Bridge from './stores/bridge.ts';
+import Unspents from './stores/unspents.ts';
 
 @observer
-export default class App extends React.Component {
+class App extends React.Component {
   constructor(props) {
     super(props);
     const stores = {
@@ -30,7 +23,6 @@ export default class App extends React.Component {
     stores.tokens = new Tokens(stores.account, stores.bridge, stores.node);
     stores.unspents = new Unspents(stores.bridge, stores.account, stores.node);
     this.stores = stores;
-    // AsyncStorage.clear();
   }
 
   render() {
@@ -43,6 +35,8 @@ export default class App extends React.Component {
     );
   }
 }
+
+export default App;
 
 const styles = StyleSheet.create({
   container: {

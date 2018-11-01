@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { observable, reaction, action } from 'mobx';
 import { observer, inject } from 'mobx-react/native';
 import { HeaderBackButton } from 'react-navigation';
@@ -14,7 +15,7 @@ import {
 } from 'react-native';
 import autobind from 'autobind-decorator';
 import TokenValue from './TokenValue';
-import { range } from '../utils/range';
+import { range } from '../utils/range.ts';
 
 function colorFromAddr(addr) {
   const base = (parseInt(addr.slice(12, 18), 16) % 10) + 2;
@@ -25,7 +26,14 @@ function colorFromAddr(addr) {
 
 @inject('app', 'tokens')
 @observer
-export default class ColorSelector extends Component {
+class ColorSelector extends Component {
+  static propTypes = {
+    app: PropTypes.object,
+    tokens: PropTypes.object,
+    onDepositPress: PropTypes.func,
+    onBackPress: PropTypes.func,
+  };
+
   @observable
   width = Dimensions.get('window').width;
 
@@ -45,17 +53,16 @@ export default class ColorSelector extends Component {
   }
 
   updateScrollPosition(color) {
-    if (!this.scrollView) {
-      return null;
-    }
-    const index = this.props.tokens.tokenIndexForColor(color);
-    const offsetX = index * this.width;
-    if (offsetX !== this.contentOffsetX && this.scrollView && this.width) {
-      this.scrollView.scrollTo({
-        x: offsetX,
-        y: 0,
-        animated: false,
-      });
+    if (this.scrollView) {
+      const index = this.props.tokens.tokenIndexForColor(color);
+      const offsetX = index * this.width;
+      if (offsetX !== this.contentOffsetX && this.scrollView && this.width) {
+        this.scrollView.scrollTo({
+          x: offsetX,
+          y: 0,
+          animated: false,
+        });
+      }
     }
   }
 
@@ -171,6 +178,8 @@ export default class ColorSelector extends Component {
     );
   }
 }
+
+export default ColorSelector;
 
 const styles = StyleSheet.create({
   container: {

@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
 import { Output } from 'parsec-lib';
 import { observer } from 'mobx-react';
 import Select from 'react-native-picker-select';
@@ -6,7 +7,18 @@ import Select from 'react-native-picker-select';
 import Input, { inputIOSStyle } from './Input';
 
 @observer
-export default class AmountInput extends React.Component {
+class AmountInput extends React.Component {
+  static propTypes = {
+    color: PropTypes.number.isRequired,
+    balance: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+      PropTypes.arrayOf(),
+    ]).isRequired,
+    value: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
+  };
+
   render() {
     const { color, balance, value, onChange } = this.props;
     return (
@@ -28,3 +40,5 @@ export default class AmountInput extends React.Component {
     );
   }
 }
+
+export default AmountInput;

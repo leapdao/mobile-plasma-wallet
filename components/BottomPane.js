@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-export default ({ style, ...props }) => {
+export default function BottomPane({ style, ...props }) {
   return <View style={[styles.container, style]} {...props} />;
-};
+}
 
 const styles = StyleSheet.create({
   container: {

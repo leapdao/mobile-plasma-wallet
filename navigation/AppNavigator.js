@@ -1,5 +1,4 @@
 import React from 'react';
-import { View } from 'react-native';
 import { createSwitchNavigator, createStackNavigator } from 'react-navigation';
 
 import MainTabNavigator from './MainTabNavigator';
@@ -25,7 +24,7 @@ const SwitchNavigator = createSwitchNavigator(
                 return (
                   <ColorSelector
                     onBackPress={() => {
-                      props.navigation.pop();
+                      props.navigation.pop(); // eslint-disable-line
                     }}
                   />
                 );

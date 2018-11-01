@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react/native';
 import {
   StyleSheet,
@@ -10,35 +11,44 @@ import {
 } from 'react-native';
 import autobind from 'autobind-decorator';
 
-import TransactionsList from '../components/TransactionsList';
 import DepositForm from '../components/DepositForm';
 
 @inject('app', 'bridge', 'tokens', 'account')
 @observer
-export default class DepositScreen extends React.Component {
+class DepositScreen extends React.Component {
+  static propTypes = {
+    app: PropTypes.object,
+    tokens: PropTypes.object,
+    bridge: PropTypes.object,
+    navigation: PropTypes.object,
+    account: PropTypes.object,
+  };
+
   @autobind
   handleSubmit(value) {
     const { app, tokens, bridge, navigation } = this.props;
     const token = tokens.tokenForColor(app.color);
 
-    if (token) {
-      const txPromise = bridge.deposit(token, token.toCents(value)).then(
-        ({ futureReceipt }) => {
-          return new Promise((resolve, reject) => {
-            futureReceipt.once('transactionHash', resolve);
-            futureReceipt.once('error', reject);
-            futureReceipt.then(r => resolve(r.transactionHash));
-          });
-        },
-        err => {
-          console.error(err);
-        }
-      );
-      txPromise.then(() => {
-        navigation.pop();
-      });
-      return txPromise;
+    if (!token) {
+      return undefined;
     }
+
+    const txPromise = bridge.deposit(token, token.toCents(value)).then(
+      ({ futureReceipt }) => {
+        return new Promise((resolve, reject) => {
+          futureReceipt.once('transactionHash', resolve);
+          futureReceipt.once('error', reject);
+          futureReceipt.then(r => resolve(r.transactionHash));
+        });
+      },
+      err => {
+        console.error(err);
+      }
+    );
+    txPromise.then(() => {
+      navigation.pop();
+    });
+    return txPromise;
   }
 
   render() {
@@ -65,17 +75,9 @@ export default class DepositScreen extends React.Component {
       </KeyboardAvoidingView>
     );
   }
-
-  _handleLearnMorePress = () => {
-    // WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
-
-  _handleHelpPress = () => {
-    // WebBrowser.openBrowserAsync(
-    //   'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-    // );
-  };
 }
+
+export default DepositScreen;
 
 const styles = StyleSheet.create({
   container: {

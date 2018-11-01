@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
 import { StyleSheet, KeyboardAvoidingView } from 'react-native';
 import autobind from 'autobind-decorator';
@@ -8,7 +9,12 @@ import TransferForm from '../components/TransferForm';
 
 @inject('app', 'tokens')
 @observer
-export default class TransferScreen extends React.Component {
+class TransferScreen extends React.Component {
+  static propTypes = {
+    app: PropTypes.object,
+    tokens: PropTypes.object,
+  };
+
   @autobind
   handleSubmit(to, value) {
     const { app, tokens } = this.props;
@@ -27,6 +33,8 @@ export default class TransferScreen extends React.Component {
         }
       );
     }
+
+    return undefined;
   }
 
   render() {
@@ -39,6 +47,8 @@ export default class TransferScreen extends React.Component {
     );
   }
 }
+
+export default TransferScreen;
 
 const styles = StyleSheet.create({
   container: {

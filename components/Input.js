@@ -1,9 +1,9 @@
 import React from 'react';
 import { TextInput, StyleSheet } from 'react-native';
 
-export default ({ style, ...props }) => (
-  <TextInput {...props} style={[style, styles.input]} />
-);
+export default function Input({ style, ...props }) {
+  return <TextInput {...props} style={[style, styles.input]} />;
+}
 
 export const inputIOSStyle = {
   fontSize: 16,
@@ -14,7 +14,6 @@ export const inputIOSStyle = {
   borderColor: 'gray',
   borderRadius: 4,
   backgroundColor: 'white',
-  width: 100,
   color: 'black',
   width: '100%',
 };

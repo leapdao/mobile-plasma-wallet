@@ -1,15 +1,23 @@
 import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { Output } from 'parsec-lib';
 import TokenValue from './TokenValue';
 import { shortenHex } from '../utils';
-import { Output } from 'parsec-lib';
 
 const Separator = () => <View style={styles.separator} />;
 
 @inject('account', 'app', 'node', 'tokens')
 @observer
-export default class DepositScreen extends React.Component {
+class TransactionsList extends React.Component {
+  static propTypes = {
+    account: PropTypes.object,
+    app: PropTypes.object,
+    node: PropTypes.object,
+    tokens: PropTypes.object,
+  };
+
   static navigationOptions = {
     header: null,
   };
@@ -73,6 +81,8 @@ export default class DepositScreen extends React.Component {
     );
   }
 }
+
+export default TransactionsList;
 
 const styles = StyleSheet.create({
   container: {

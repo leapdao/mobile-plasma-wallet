@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Output } from 'parsec-lib';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react/native';
@@ -18,7 +19,13 @@ import BottomPane from './BottomPane';
 
 @inject('tokens')
 @observer
-export default class TransferForm extends React.Component {
+class TransferForm extends React.Component {
+  static propTypes = {
+    color: PropTypes.number.isRequired,
+    tokens: PropTypes.object,
+    onSubmit: PropTypes.func,
+  };
+
   @observable
   value = Output.isNFT(this.props.color) ? '' : '0';
 
@@ -38,14 +45,14 @@ export default class TransferForm extends React.Component {
     this.address = address;
   }
 
-  componentWillReceiveProps({ color: nextColor }) {
+  componentDidUpdate({ color: prevColor }) {
     const { color } = this.props;
-    if (color !== nextColor) {
+    if (color !== prevColor) {
       if (
-        Output.isNFT(nextColor) ||
-        Output.isNFT(color) !== Output.isNFT(nextColor)
+        Output.isNFT(color) ||
+        Output.isNFT(color) !== Output.isNFT(prevColor)
       ) {
-        this.value = Output.isNFT(nextColor) ? '' : '0';
+        this.value = Output.isNFT(color) ? '' : '0';
       }
     }
   }
@@ -73,7 +80,7 @@ export default class TransferForm extends React.Component {
               this.sending = true;
               Promise.resolve(onSubmit(this.address, this.value))
                 .then(
-                  txHash => {
+                  () => {
                     this.address = '';
                     this.value = Output.isNFT(color) ? '' : '0';
                   },
@@ -128,6 +135,8 @@ export default class TransferForm extends React.Component {
     );
   }
 }
+
+export default TransferForm;
 
 const styles = StyleSheet.create({
   container: {

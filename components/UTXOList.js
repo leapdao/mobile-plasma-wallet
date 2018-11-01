@@ -8,16 +8,16 @@ import {
   ActivityIndicator,
   FlatList,
 } from 'react-native';
+import { bufferToHex } from 'ethereumjs-util';
 import { inject, observer } from 'mobx-react/native';
 import TokenValue from './TokenValue';
 import { shortenHex } from '../utils';
-import { bufferToHex } from 'ethereumjs-util';
 
 const Separator = () => <View style={styles.separator} />;
 
 @inject('app', 'unspents', 'tokens')
 @observer
-export default class UTXOList extends React.Component {
+class UTXOList extends React.Component {
   handleExit(u) {
     const { unspents } = this.props;
     Alert.alert(
@@ -61,6 +61,7 @@ export default class UTXOList extends React.Component {
         }
         contentContainerStyle={styles.contentContainer}
         style={styles.container}
+        extraData={unspents.pendingExits}
         data={utxoList
           .sort((a, b) => b.transaction.blockNumber - a.transaction.blockNumber)
           .map(u => ({
@@ -96,6 +97,8 @@ export default class UTXOList extends React.Component {
     );
   }
 }
+
+export default UTXOList;
 
 const styles = StyleSheet.create({
   container: {},

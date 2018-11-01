@@ -1,11 +1,21 @@
 import React from 'react';
-import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
+import PropTypes from 'prop-types';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { inject, observer } from 'mobx-react/native';
 import { reaction } from 'mobx';
 
 @inject('bridge', 'app', 'node', 'account', 'tokens')
 @observer
-export default class KeyScreen extends React.Component {
+class LoadingScreen extends React.Component {
+  static propTypes = {
+    bridge: PropTypes.object,
+    app: PropTypes.object,
+    node: PropTypes.object,
+    account: PropTypes.object,
+    tokens: PropTypes.object,
+    navigation: PropTypes.object,
+  };
+
   constructor(props) {
     super(props);
     const isReady = () =>
@@ -30,8 +40,8 @@ export default class KeyScreen extends React.Component {
       });
     }
   }
+
   render() {
-    // const { account } = this.props;
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" />
@@ -39,6 +49,8 @@ export default class KeyScreen extends React.Component {
     );
   }
 }
+
+export default LoadingScreen;
 
 const styles = StyleSheet.create({
   container: {
