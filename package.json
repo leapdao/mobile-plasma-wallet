@@ -7,7 +7,15 @@
     "test": "jest",
     "prepare": "npm run patch && npm run nodeify",
     "patch": "find ./node_modules -name fetch-npm-browserify.js -print -exec sed -i.bk 's/self/global/g' {} \\;",
-    "nodeify": "./node_modules/.bin/rn-nodeify --hack"
+    "nodeify": "./node_modules/.bin/rn-nodeify --hack",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "git add",
+      "eslint"
+    ]
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.1.2",
@@ -68,7 +76,9 @@
     "eslint-config-prettier": "^3.1.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-react": "^7.11.1",
+    "husky": "^1.1.2",
     "jest": "23.6.0",
+    "lint-staged": "^8.0.4",
     "metro-react-native-babel-preset": "0.48.1",
     "prettier": "^1.14.3",
     "react-native-typescript-transformer": "^1.2.10",
