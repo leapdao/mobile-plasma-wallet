@@ -5,7 +5,9 @@ import TokenValue from './TokenValue';
 import { shortenHex } from '../utils';
 import { Output } from 'parsec-lib';
 
-@inject('account', 'app', 'node')
+const Separator = () => <View style={styles.separator} />;
+
+@inject('account', 'app', 'node', 'tokens')
 @observer
 export default class DepositScreen extends React.Component {
   static navigationOptions = {
@@ -13,7 +15,7 @@ export default class DepositScreen extends React.Component {
   };
 
   render() {
-    const { account, app, node } = this.props;
+    const { account, app, node, tokens } = this.props;
     const isIcoming = tx => (tx.to || '').toLowerCase() === account.address;
     const signedValue = tx => {
       if (Output.isNFT(tx.color)) {
@@ -22,20 +24,27 @@ export default class DepositScreen extends React.Component {
 
       return tx.value * (isIcoming(tx) ? 1 : -1);
     };
+    const data = account.transactions
+      .filter(tx => tx.color === app.color)
+      .map(tx => ({
+        ...tx,
+        key: tx.hash,
+      }));
     return (
       <FlatList
+        ItemSeparatorComponent={Separator}
+        ListEmptyComponent={
+          <Text style={styles.empty}>
+            No {tokens.tokenForColor(app.color).symbol} transactions
+          </Text>
+        }
         onEndReached={() => {
           if (node.firstBlock > 0) {
             node.fetchOldBlocks();
           }
         }}
         onEndReachedThreshold={0.5}
-        data={account.transactions
-          .filter(tx => tx.color === app.color)
-          .map(tx => ({
-            ...tx,
-            key: tx.hash,
-          }))}
+        data={data}
         renderItem={({ item: tx }) => (
           <View style={styles.item} key={tx.hash}>
             <TokenValue
@@ -74,10 +83,17 @@ const styles = StyleSheet.create({
   },
   item: {
     padding: 10,
-    borderTopColor: '#ccc',
-    borderTopWidth: 1,
   },
   value: {
     fontWeight: 'bold',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#efefef',
+  },
+  empty: {
+    color: '#000',
+    textAlign: 'center',
+    paddingVertical: 20,
   },
 });
