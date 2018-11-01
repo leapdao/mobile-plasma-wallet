@@ -5,7 +5,7 @@ import getParsecWeb3 from '../utils/getParsecWeb3';
 import persistentStore, { IPersistentStore } from './persistentStore';
 import { range } from '../utils/range';
 
-@persistentStore('node1')
+@persistentStore('nod')
 export default class NodeStore implements IPersistentStore {
   @observable
   public ready: boolean = false;

@@ -1,11 +1,11 @@
 import React, { Fragment } from 'react';
 import { observer, inject } from 'mobx-react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
 import TokenValue from './TokenValue';
 import { shortenHex } from '../utils';
 import { Output } from 'parsec-lib';
 
-@inject('account', 'app')
+@inject('account', 'app', 'node')
 @observer
 export default class DepositScreen extends React.Component {
   static navigationOptions = {
@@ -13,7 +13,7 @@ export default class DepositScreen extends React.Component {
   };
 
   render() {
-    const { account, app } = this.props;
+    const { account, app, node } = this.props;
     const isIcoming = tx => (tx.to || '').toLowerCase() === account.address;
     const signedValue = tx => {
       if (Output.isNFT(tx.color)) {
@@ -23,8 +23,20 @@ export default class DepositScreen extends React.Component {
       return tx.value * (isIcoming(tx) ? 1 : -1);
     };
     return (
-      <ScrollView>
-        {account.transactions.filter(tx => tx.color === app.color).map(tx => (
+      <FlatList
+        onEndReached={() => {
+          if (node.firstBlock > 0) {
+            node.fetchOldBlocks();
+          }
+        }}
+        onEndReachedThreshold={0.5}
+        data={account.transactions
+          .filter(tx => tx.color === app.color)
+          .map(tx => ({
+            ...tx,
+            key: tx.hash,
+          }))}
+        renderItem={({ item: tx }) => (
           <View style={styles.item} key={tx.hash}>
             <TokenValue
               value={signedValue(tx)}
@@ -47,8 +59,8 @@ export default class DepositScreen extends React.Component {
 
             <Text>Height: {tx.blockNumber}</Text>
           </View>
-        ))}
-      </ScrollView>
+        )}
+      />
     );
   }
 }
