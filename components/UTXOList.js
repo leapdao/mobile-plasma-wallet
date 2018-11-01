@@ -1,18 +1,19 @@
 import React, { Fragment } from 'react';
-import { toJS } from 'mobx';
 import {
   View,
   Text,
   StyleSheet,
   Button,
-  ScrollView,
   Alert,
   ActivityIndicator,
+  FlatList,
 } from 'react-native';
 import { inject, observer } from 'mobx-react/native';
 import TokenValue from './TokenValue';
 import { shortenHex } from '../utils';
 import { bufferToHex } from 'ethereumjs-util';
+
+const Separator = () => <View style={styles.separator} />;
 
 @inject('app', 'unspents', 'tokens')
 @observer
@@ -51,38 +52,47 @@ export default class UTXOList extends React.Component {
     }
 
     return (
-      <ScrollView
+      <FlatList
+        ItemSeparatorComponent={Separator}
+        ListEmptyComponent={
+          <Text style={styles.empty}>
+            No {tokens.tokenForColor(app.color).symbol} UTXOs
+          </Text>
+        }
         contentContainerStyle={styles.contentContainer}
         style={styles.container}
-      >
-        {utxoList
+        data={utxoList
           .sort((a, b) => b.transaction.blockNumber - a.transaction.blockNumber)
-          .map(u => (
-            <View style={styles.item} key={u.outpoint.hex()}>
-              <TokenValue {...u.output} />
-              <Text>
-                Input: {shortenHex(bufferToHex(u.outpoint.hash))}:{' '}
-                {u.outpoint.index} | Height: {u.transaction.blockNumber}
-              </Text>
+          .map(u => ({
+            ...u,
+            key: u.outpoint.hex(),
+          }))}
+        renderItem={({ item: u }) => (
+          <View style={styles.item}>
+            <TokenValue {...u.output} />
+            <Text>
+              Input: {shortenHex(bufferToHex(u.outpoint.hash))}:{' '}
+              {u.outpoint.index} | Height: {u.transaction.blockNumber}
+            </Text>
 
-              <Fragment>
-                {unspents.periodBlocksRange[0] > u.transaction.blockNumber && (
-                  <Fragment>
-                    {!unspents.pendingExits[u.outpoint.hex()] ? (
-                      <Button title="Exit" onPress={() => this.handleExit(u)} />
-                    ) : (
-                      <ActivityIndicator />
-                    )}
-                  </Fragment>
-                )}
+            <Fragment>
+              {unspents.periodBlocksRange[0] > u.transaction.blockNumber && (
+                <Fragment>
+                  {!unspents.pendingExits[u.outpoint.hex()] ? (
+                    <Button title="Exit" onPress={() => this.handleExit(u)} />
+                  ) : (
+                    <ActivityIndicator />
+                  )}
+                </Fragment>
+              )}
 
-                {unspents.periodBlocksRange[0] <= u.transaction.blockNumber && (
-                  <Text>Wait until height {unspents.periodBlocksRange[1]}</Text>
-                )}
-              </Fragment>
-            </View>
-          ))}
-      </ScrollView>
+              {unspents.periodBlocksRange[0] <= u.transaction.blockNumber && (
+                <Text>Wait until height {unspents.periodBlocksRange[1]}</Text>
+              )}
+            </Fragment>
+          </View>
+        )}
+      />
     );
   }
 }
@@ -92,7 +102,14 @@ const styles = StyleSheet.create({
   contentContainer: {},
   item: {
     padding: 10,
-    borderTopColor: '#ccc',
-    borderTopWidth: 1,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#efefef',
+  },
+  empty: {
+    color: '#000',
+    textAlign: 'center',
+    paddingVertical: 20,
   },
 });
