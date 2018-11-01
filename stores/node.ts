@@ -1,4 +1,4 @@
-import { observable, reaction, action } from 'mobx';
+import { observable, reaction, action, computed, autorun } from 'mobx';
 import { Block } from 'web3/types';
 import autobind from 'autobind-decorator';
 import getParsecWeb3 from '../utils/getParsecWeb3';
@@ -19,6 +19,15 @@ export default class NodeStore implements IPersistentStore {
   @observable
   public blocks: Block[] = observable.array([]);
 
+  @computed
+  public get firstBlock() {
+    if (this.blocks.length === 0) {
+      return 0;
+    }
+
+    return this.blocks[0].number;
+  }
+
   constructor() {
     this.loadLatestBlock();
     setInterval(this.loadLatestBlock, 2000);
@@ -26,29 +35,48 @@ export default class NodeStore implements IPersistentStore {
       () => this.ready,
       (_, r) => {
         r.dispose();
-        reaction(() => this.latestBlock, this.fetchBlocks);
+        autorun(this.fetchLatestBlocks);
       }
     );
-  }
 
-  @autobind
-  private loadLatestBlock() {
-    getParsecWeb3().eth.getBlockNumber((err: any, number: number) => {
-      if (this.latestBlock !== number && number) {
-        this.latestBlock = number;
-      }
+    autorun(() => {
+      console.log('firstBlock', this.firstBlock);
     });
   }
 
   @autobind
-  private fetchBlocks() {
-    if (this.latestBlock !== this.latestFetchedBlock) {
-      this.fetchBlocksRange(this.latestFetchedBlock, this.latestBlock).then(
-        blocks => {
-          this.blocks = observable.array(this.blocks.concat(blocks));
-          this.latestFetchedBlock = this.latestBlock;
+  private loadLatestBlock() {
+    getParsecWeb3()
+      .eth.getBlockNumber()
+      .then((number: number) => {
+        if (this.latestBlock !== number && number) {
+          this.latestBlock = number;
         }
-      );
+      });
+  }
+
+  @autobind
+  private fetchLatestBlocks() {
+    if (this.latestBlock !== this.latestFetchedBlock) {
+      this.fetchBlocksRange(
+        Math.max(this.latestFetchedBlock, this.latestBlock - 100),
+        this.latestBlock
+      ).then(blocks => {
+        this.blocks = observable.array(this.blocks.concat(blocks));
+        this.latestFetchedBlock = this.latestBlock;
+      });
+    }
+  }
+
+  @autobind
+  public fetchOldBlocks() {
+    if (this.firstBlock > 0) {
+      this.fetchBlocksRange(
+        Math.max(0, this.firstBlock - 100),
+        this.firstBlock - 1
+      ).then(blocks => {
+        this.blocks = observable.array(blocks.concat(this.blocks));
+      });
     }
   }
 
