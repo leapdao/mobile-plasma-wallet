@@ -80,13 +80,13 @@ export default class Tokens implements IPersistentStore {
     });
   }
 
-  // @computed
-  // public get ready() {
-  //   if (!this.list) {
-  //     return false;
-  //   }
-  //   return !this.list.some(token => !token.ready);
-  // }
+  @computed
+  public get tokensReady() {
+    if (!this.list) {
+      return false;
+    }
+    return !this.list.some(token => !token.ready);
+  }
 
   public tokenIndexForColor(color: number) {
     return Output.isNFT(color)

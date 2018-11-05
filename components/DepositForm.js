@@ -3,17 +3,12 @@ import PropTypes from 'prop-types';
 import { Output } from 'parsec-lib';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react/native';
-import {
-  StyleSheet,
-  Button,
-  View,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+import { StyleSheet, View, ActivityIndicator, Alert } from 'react-native';
 import autobind from 'autobind-decorator';
 
 import AmountInput from './AmountInput';
 import BottomPane from './BottomPane';
+import Button from './Button';
 
 @inject('tokens')
 @observer

@@ -24,6 +24,11 @@ class TransactionsList extends React.Component {
 
   render() {
     const { account, app, node, tokens } = this.props;
+
+    if (!tokens.tokensReady) {
+      return null;
+    }
+
     const isIcoming = tx => (tx.to || '').toLowerCase() === account.address;
     const signedValue = tx => {
       if (Output.isNFT(tx.color)) {
@@ -43,7 +48,10 @@ class TransactionsList extends React.Component {
         ItemSeparatorComponent={Separator}
         ListEmptyComponent={
           <Text style={styles.empty}>
-            No {tokens.tokenForColor(app.color).symbol} transactions
+            No{' '}
+            {tokens.tokenForColor(app.color) &&
+              tokens.tokenForColor(app.color).symbol}{' '}
+            transactions
           </Text>
         }
         onEndReached={() => {

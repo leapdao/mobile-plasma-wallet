@@ -35,7 +35,7 @@
     "ethereumjs-util": "^6.0.0",
     "events": "^1.1.1",
     "https-browserify": "0.0.1",
-    "mobx": "^5.5.2",
+    "mobx": "^4.5.2",
     "mobx-react": "^5.3.5",
     "node-libs-react-native": "abec/node-libs-react-native",
     "parsec-lib": "^0.18.1",

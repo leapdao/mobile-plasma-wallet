@@ -6,12 +6,12 @@ import {
   KeyboardAvoidingView,
   View,
   Text,
-  Button,
   Clipboard,
 } from 'react-native';
 import autobind from 'autobind-decorator';
 
 import DepositForm from '../components/DepositForm';
+import Button from '../components/Button';
 
 @inject('app', 'bridge', 'tokens', 'account')
 @observer

@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Button,
   Alert,
   ActivityIndicator,
   FlatList,
@@ -11,6 +10,7 @@ import {
 import { bufferToHex } from 'ethereumjs-util';
 import { inject, observer } from 'mobx-react/native';
 import TokenValue from './TokenValue';
+import Button from './Button';
 import { shortenHex } from '../utils';
 
 const Separator = () => <View style={styles.separator} />;

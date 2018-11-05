@@ -8,6 +8,7 @@ import {
   View,
   Text,
   StyleSheet,
+  SafeAreaView,
   StatusBar,
   Animated,
   TouchableOpacity,
@@ -89,24 +90,37 @@ class ColorSelector extends Component {
 
   render() {
     const { app, tokens, onDepositPress, onBackPress } = this.props;
+    const widths =
+      tokens.list.length < 2
+        ? [0, this.width]
+        : range(0, tokens.list.length - 1).map(i => i * this.width);
+    const colors =
+      tokens.list.length < 2
+        ? [
+            tokens.list.length > 0
+              ? colorFromAddr(tokens.list[0].address)
+              : '#000',
+            tokens.list.length > 0
+              ? colorFromAddr(tokens.list[0].address)
+              : '#000',
+          ]
+        : tokens.list.map(token => colorFromAddr(token.address));
+
     return (
       <Animated.View
         style={[
           styles.container,
           {
             backgroundColor: this.backgroundColor.interpolate({
-              inputRange: range(0, tokens.list.length - 1).map(
-                i => i * this.width
-              ),
-              outputRange: tokens.list.map(token =>
-                colorFromAddr(token.address)
-              ),
+              inputRange: widths,
+              outputRange: colors,
             }),
           },
         ]}
       >
         <ScrollView
           ref={this.handleRef}
+          style={styles.colors}
           contentContainerStyle={styles.contentContainer}
           pagingEnabled={true}
           horizontal={true}
@@ -120,7 +134,7 @@ class ColorSelector extends Component {
           onMomentumScrollEnd={this.handleMomentumScrollEnd}
         >
           {tokens.list.map(token => (
-            <View
+            <SafeAreaView
               style={[
                 styles.color,
                 {
@@ -148,21 +162,25 @@ class ColorSelector extends Component {
                   />
                 </Text>
               </View>
-            </View>
+            </SafeAreaView>
           ))}
         </ScrollView>
-        {onDepositPress && (
-          <View style={[styles.navButtonWrapper, styles.depositButtonWrapper]}>
-            <TouchableOpacity onPress={onDepositPress}>
-              <Text style={styles.depositButtonText}>+ deposit</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        {onBackPress && (
-          <View style={[styles.navButtonWrapper, styles.backButtonWrapper]}>
-            <HeaderBackButton tintColor="white" onPress={onBackPress} />
-          </View>
-        )}
+        <SafeAreaView style={styles.nav}>
+          {onDepositPress && (
+            <View
+              style={[styles.navButtonWrapper, styles.depositButtonWrapper]}
+            >
+              <TouchableOpacity onPress={onDepositPress}>
+                <Text style={styles.depositButtonText}>+ deposit</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          {onBackPress && (
+            <View style={[styles.navButtonWrapper, styles.backButtonWrapper]}>
+              <HeaderBackButton tintColor="white" onPress={onBackPress} />
+            </View>
+          )}
+        </SafeAreaView>
         <View style={styles.dots}>
           {tokens.list.map((token, i) => (
             <View
@@ -184,7 +202,10 @@ export default ColorSelector;
 const styles = StyleSheet.create({
   container: {
     minHeight: 180,
-    backgroundColor: '#efefef',
+    height: '20%',
+    overflow: 'hidden',
+  },
+  colors: {
     flex: 1,
   },
   contentContainer: {
@@ -192,10 +213,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   color: {
-    paddingTop: 30,
     flex: 1,
     width: 300,
-    height: '100%',
+    height: 180,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -233,9 +253,14 @@ const styles = StyleSheet.create({
   activeDot: {
     opacity: 0.5,
   },
+  nav: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+  },
   navButtonWrapper: {
     position: 'absolute',
-    top: 34,
   },
   depositButtonWrapper: {
     right: 10,

@@ -1,23 +1,29 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import createBlockie from 'ethereum-blockies-base64';
 import { SafeAreaView } from 'react-navigation';
 import { observer, inject } from 'mobx-react/native';
 import {
   StyleSheet,
   KeyboardAvoidingView,
-  Button,
   Text,
   Image,
   Alert,
 } from 'react-native';
 import autobind from 'autobind-decorator';
 import BottomPane from '../components/BottomPane';
+import Button from '../components/Button';
 
 @inject('account')
 @observer
-export default class AccountScreen extends React.Component {
+class AccountScreen extends React.Component {
   static navigationOptions = {
     header: null,
+  };
+
+  static propTypes = {
+    account: PropTypes.object,
+    navigation: PropTypes.object,
   };
 
   @autobind
@@ -59,6 +65,8 @@ export default class AccountScreen extends React.Component {
     );
   }
 }
+
+export default AccountScreen;
 
 const styles = StyleSheet.create({
   container: {

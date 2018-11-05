@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, Button, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { inject, observer } from 'mobx-react/native';
 import { observable } from 'mobx';
 import { SafeAreaView } from 'react-navigation';
@@ -8,6 +8,7 @@ import autobind from 'autobind-decorator';
 import Icon from 'react-native-vector-icons/AntDesign';
 import getWeb3 from '../utils/getWeb3';
 import Input from '../components/Input';
+import Button from '../components/Button';
 
 @inject('account')
 @observer
@@ -52,7 +53,7 @@ class KeyScreen extends React.Component {
             style={{ marginBottom: -3 }}
           />
         </View>
-        <Button title="Generate new key" onPress={this.handleNewKey} />
+        <Button onPress={this.handleNewKey} title="Generate new key" />
         <Text style={styles.divider}>or</Text>
         <Input
           value={this.privKey}

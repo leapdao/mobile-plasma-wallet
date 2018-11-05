@@ -31,13 +31,15 @@ export default class Account implements IPersistentStore {
       .reduce(
         (txs, block) => {
           return txs.concat(
-            block.transactions.filter(tx => {
-              return (
-                tx.from !== tx.to &&
-                ((tx.from || '').toLowerCase() === address ||
-                  (tx.to || '').toLowerCase() === address)
-              );
-            })
+            block.transactions
+              ? block.transactions.filter(tx => {
+                  return (
+                    tx.from !== tx.to &&
+                    ((tx.from || '').toLowerCase() === address ||
+                      (tx.to || '').toLowerCase() === address)
+                  );
+                })
+              : []
           );
         },
         [] as Transaction[]
@@ -64,7 +66,9 @@ export default class Account implements IPersistentStore {
 
   @computed
   public get address() {
-    return this.account && this.account.address.toLowerCase();
+    return (
+      this.account && this.account.address && this.account.address.toLowerCase()
+    );
   }
 
   @autobind

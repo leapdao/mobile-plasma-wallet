@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, View, Button } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { inject } from 'mobx-react/native';
 import UTXOList from '../components/UTXOList';
 import BottomPane from '../components/BottomPane';
+import Button from '../components/Button';
 
 @inject('unspents', 'app', 'bridge')
 class ExitScreen extends React.Component {

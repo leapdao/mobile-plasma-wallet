@@ -1,12 +1,12 @@
+/* eslint-disable react/prop-types */
+
 import React from 'react';
-import { Platform } from 'react-native';
 import {
   createStackNavigator,
   createBottomTabNavigator,
 } from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
-import DepositScreen from '../screens/DepositScreen';
 import TransferScreen from '../screens/TransferScreen';
 import ExitScreen from '../screens/ExitScreen';
 import AccountScreen from '../screens/AccountScreen';
@@ -26,23 +26,6 @@ const stackNavigatorOptions = {
   },
 };
 
-// const DepositStack = createStackNavigator(
-//   {
-//     Deposit: DepositScreen,
-//   },
-//   stackNavigatorOptions
-// );
-
-// DepositStack.navigationOptions = {
-//   tabBarLabel: 'Deposit',
-//   tabBarIcon: ({ focused }) => (
-//     <TabBarIcon
-//       focused={focused}
-//       name={Platform.OS === 'ios' ? `login` : 'md-information-circle'}
-//     />
-//   ),
-// };
-
 const TransferStack = createStackNavigator(
   {
     Transfer: TransferScreen,
@@ -52,12 +35,7 @@ const TransferStack = createStackNavigator(
 
 TransferStack.navigationOptions = {
   tabBarLabel: 'Transfer',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? `swap` : 'md-swap'}
-    />
-  ),
+  tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="swap" />,
 };
 
 const ExitStack = createStackNavigator(
@@ -69,12 +47,7 @@ const ExitStack = createStackNavigator(
 
 ExitStack.navigationOptions = {
   tabBarLabel: 'Exit',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? `logout` : 'md-options'}
-    />
-  ),
+  tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="logout" />,
 };
 
 const AccountStack = createStackNavigator({
@@ -83,12 +56,7 @@ const AccountStack = createStackNavigator({
 
 AccountStack.navigationOptions = {
   tabBarLabel: 'Account',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? `user` : 'md-options'}
-    />
-  ),
+  tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="user" />,
 };
 
 const TabNavigator = createBottomTabNavigator({

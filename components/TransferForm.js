@@ -3,19 +3,14 @@ import PropTypes from 'prop-types';
 import { Output } from 'parsec-lib';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react/native';
-import {
-  StyleSheet,
-  Button,
-  View,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+import { StyleSheet, View, ActivityIndicator, Alert } from 'react-native';
 import autobind from 'autobind-decorator';
 import { isValidAddress } from 'ethereumjs-util';
 
 import AmountInput from './AmountInput';
 import Input from './Input';
 import BottomPane from './BottomPane';
+import Button from './Button';
 
 @inject('tokens')
 @observer
@@ -63,7 +58,6 @@ class TransferForm extends React.Component {
     const token = tokens.tokenForColor(color);
     const value = token.isNft ? this.value : Number(this.value);
     const address = this.address.trim();
-    console.log(onSubmit, value, address, isValidAddress(address));
 
     if (onSubmit && value && isValidAddress(address)) {
       Alert.alert(
@@ -100,6 +94,7 @@ class TransferForm extends React.Component {
   render() {
     const { color, tokens } = this.props;
     const token = tokens.tokenForColor(color);
+    console.log(this.handleSubmit);
 
     if (!token || !token.ready) {
       return null;
